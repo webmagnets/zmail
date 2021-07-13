@@ -1,21 +1,16 @@
 import { combineReducers } from 'redux';
 
 import user from './user';
-// import loading from './loading';
-
-export const USER_LOGOUT = "USER_LOGOUT"
-export const userLogOut = () => ({
-  type: USER_LOGOUT,
-});
+import mail from './mail';
+import mailThread from './mailThread';
 
 const appReducer = combineReducers({
-  user
+  user,
+  mail,
+  mailThread
 })
 
 const rootReducer = (state, action) => {
-  if (action.type === USER_LOGOUT) {
-    state = undefined;
-  }
   return appReducer(state, action);
 };
 
