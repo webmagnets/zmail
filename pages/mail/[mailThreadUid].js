@@ -1,8 +1,8 @@
 import Head from 'next/head'
 import Image from 'next/image'
-import MailLayout from '../components/MailLayout';
-import MailActionContainer from '../components/Mail/MailActionContainer';
-import MailContainer from '../components/Mail/MailContainer';
+import MailLayout from '../../components/MailLayout';
+import MailActionContainer from '../../components/Mail/MailActionContainer';
+import MailContainer from '../../components/Mail/MailContainer';
 
 export default function MailThread() {
   return (
