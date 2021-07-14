@@ -1,5 +1,7 @@
 export const SET_CURRENT_USER = 'SET_CURRENT_USER'
 export const USER_LOGOUT = "USER_LOGOUT"
+export const SET_INITIAL_USERS = 'SET_INITIAL_USERS'
+
 
 export const userLogOut = () => ({
   type: USER_LOGOUT,
@@ -10,15 +12,22 @@ export const setCurrentUser = (user) => ({
   payload: user,
 })
 
+export const setInitialUsers = (users) => ({
+  type: SET_INITIAL_USERS,
+  payload: users
+})
+
 const initialState = {
   currentUser: {
-    uid: '',
+    userUid: '',
+    email: '',
     displayName: '',
-    photoUrl: ''
+    photoUrl: '',
+    spammedUserUids: [],
+    blockedUserUids: [],
+    deletedMailThreads: []
   },
-  userHashMap: {},
-  userDetailsHashMap: {},
-
+  userHashMap: {}
 }
 
 const user = (state = initialState, action) => {
@@ -34,9 +43,13 @@ const user = (state = initialState, action) => {
       return {
         ...state,
         currentUser: {
-          uid: '',
+          userUid: '',
+          email: '',
           displayName: '',
-          photoUrl: ''
+          photoUrl: '',
+          spammedUserUids: [],
+          blockedUserUids: [],
+          deletedMailThreads: []
         }
       }
     }
