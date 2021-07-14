@@ -1,7 +1,7 @@
 export default function MailListItem({}) {
   return (
     <tr>
-      Hello
+      <td>Hello</td>
     </tr>
   )
 }

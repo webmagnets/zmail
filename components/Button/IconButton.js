@@ -1,125 +1,131 @@
-// import React, { useState } from 'react';
-// import styled from 'styled-components';
+import { useState } from 'react';
 
-// const Button = ({
-//   size,
-//   label,
-//   tooltipLocation,
-//   imgComponent,
-//   onClickHandler
-// }) => {
-//   const [isHovered, setIsHovered] = useState(false);
-//   return (
-//     <ButtonWrapper
-//       onClick={e => onClickHandler()}
-//       onMouseEnter={e => setIsHovered(true)}
-//       onMouseLeave={e => setIsHovered(false)}
-//       size={size}
-//     >
-//       {imgComponent}
-//       <ButtonBackground
-//         size={size}
-//         isHovered={isHovered}
-//       />
-//       {
-//         tooltipLocation === 'right' &&
-//         <ButtonTooltipRight isHovered={isHovered}>
-//           <p>{label}</p>
-//         </ButtonTooltipRight>
-//       }
-//       {
-//         tooltipLocation === 'bottom' &&
-//         <ButtonTooltipBottom isHovered={isHovered}>
-//           <p>{label}</p>
-//         </ButtonTooltipBottom>
-//       }
-//     </ButtonWrapper>
-//   );
-// }
+const wrapperSizeLookup = {
+  'small': {
+    height: 'h-9',
+    width: 'w-9'
+  },
+  'medium': {
+    height: 'h-10',
+    width: 'w-10'
+  }
+}
 
-// const ButtonWrapper = styled.div`
-//   position: relative;
-//   cursor: pointer;
-//   display: flex;
-//   justify-content: center;
-//   align-items: center;
-//   height: ${props => {
-//     switch(props.size) {
-//       case 'medium':
-//         return '48px';
-//       case 'small':
-//         return '36px';
-//       default:
-//         return '24px';
-//     }
-//   }};
-//   width: ${props => {
-//     switch(props.size) {
-//       case 'medium':
-//         return '48px';
-//       case 'small':
-//         return '36px';
-//       default:
-//         return '24px';
-//     }
-//   }};
-// `
-// const ButtonBackground = styled.div`
-//   position: absolute;
-//   left: 50%;
-//   top: 50%;
-//   height: 100%;
-//   width: 100%;
-//   height: ${props => {
-//     switch(props.size) {
-//       case 'medium':
-//         return '42px';
-//       case 'small':
-//         return '30px';
-//       default:
-//         return '22px';
-//     }
-//   }};
-//   width: ${props => {
-//     switch(props.size) {
-//       case 'medium':
-//         return '42px';
-//       case 'small':
-//         return '30px';
-//       default:
-//         return '22px';
-//     }
-//   }};
-//   transform: translate(-50%, -50%);
-//   border-radius: 50%;
-//   background-color: ${props => props.isHovered ? 'rgba(0, 0, 0, 0.03)' : 'rgba(0, 0, 0, 0)'};
-//   transition: 0.3s all;
-// `
+const inkSizeLookup = {
+  'small': {
+    height: 'h-10',
+    width: 'w-10'
+  },
+  'medium': {
+    height: 'h-11',
+    width: 'w-11'
+  }
+}
 
-// const ButtonTooltip = styled.div`
-//   position: absolute;
-//   width: max-content;
-//   display: ${props => props.isHovered ? 'block' : 'none'};
-//   padding: 4px;
-//   background-color: black;
-//   border-radius: 2px;
-//   background-color: rgba(0, 0, 0, 0.6);
-//   & > p {
-//     font-size: 8px;
-//     color: white;
-//     margin: 0;
-//     padding: 0;
-//   }
-// `
+const IconButton = ({
+  size,
+  label,
+  tooltipLocation,
+  imgComponent,
+  onClickHandler
+}) => {
+  return (
+    <div
+      className={`
+        relative
+        cursor-pointer
+        flex
+        justify-center
+        items-center
+        bg-transparent
+        group
+        ${wrapperSizeLookup[size].height}
+        ${wrapperSizeLookup[size].width}
+      `}
+      onClick={e => onClickHandler()}
+      size={size}
+    >
+      {imgComponent}
+      <div
+        className={`
+          absolute
+          rounded-full
+          bg-black
+          top-1/2
+          left-1/2
+          transform
+          -translate-x-1/2
+          -translate-y-1/2
+          transition-all
+          ease-in-out
+          duration-300
+          bg-opacity-0
+          group-hover:bg-opacity-10
+          z-10
+          ${inkSizeLookup[size].height}
+          ${inkSizeLookup[size].width}
+        `}
+      >
+        {
+          tooltipLocation === 'left' &&
+          <div
+            className={`
+              absolute
+              w-max
+              p-2
+              bg-black
+              rounded-md
+              top-1/2
+              right-14
+              transform
+              -translate-y-1/2
+              bg-opacity-60
+              hidden
+              group-hover:block
+            `}
+          >
+            <p className={`
+              text-xs
+              text-white
+              m-0
+              p-0
+            `}>
+              {label}
+            </p>
+          </div>
+        }
+        {
+          tooltipLocation === 'bottom' &&
+          <div
+            className={`
+              absolute
+              w-max
+              p-2
+              bg-black
+              rounded-md
+              transform
+              left-1/2
+              transform
+              -translate-x-1/2
+              -bottom-11
+              bg-opacity-60
+              hidden
+              group-hover:block
+            `}
+          >
+            <p className={`
+              text-xs
+              text-white
+              m-0
+              p-0
+            `}>
+              {label}
+            </p>
+          </div>
+        }
+      </div>
+    </div>
+  );
+}
 
-// const ButtonTooltipRight = styled(ButtonTooltip)`
-//   right: -80px;
-// `
-
-// const ButtonTooltipBottom = styled(ButtonTooltip)`
-//   left: 50%;
-//   transform: translateX(-50%);
-//   bottom: -18px;
-// `
-
-// export default Button;
+export default IconButton;

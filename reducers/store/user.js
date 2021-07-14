@@ -8,7 +8,7 @@ export const userLogOut = () => ({
 });
 
 export const setCurrentUser = (user) => ({
-  type: SET_USER_PROFILE,
+  type: SET_CURRENT_USER,
   payload: user,
 })
 
@@ -36,6 +36,13 @@ const user = (state = initialState, action) => {
       return {
         ...state,
         currentUser: action.payload
+      }
+    }
+
+    case SET_INITIAL_USERS: {
+      return {
+        ...state,
+        userHashMap: action.payload
       }
     }
 
