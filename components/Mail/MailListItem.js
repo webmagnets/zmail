@@ -1,135 +1,192 @@
-import {
-  MdStarBorder,
-  MdCheckBox,
-  MdCheckBoxOutlineBlank,
-} from 'react-icons/md'
-import React from 'react';
-import { getDateByTime } from '../../lib/utils'
-import IconButton from '../Button/IconButton'
+import Image from 'next/image'
+import { MdForward, MdMoreVert, MdReply, MdStar, MdStarBorder } from 'react-icons/md';
+import { getDateByTime } from '../../lib/utils';
+import IconButton from '../Button/IconButton';
 
-function MailListItem({
-  thread,
-  onSelectThread
-}) {
-  console.log(thread)
-  const threadCreatedAt = (secs) => {
-    const t = getDateByTime(secs);
-    const now = new Date();
+const MailListItem = ({
+  mail,
+  isLast,
+  currentUserUid,
+  handleOnClickItem
+}) => {
+  console.log(mail);
+  const receiverNames = mail.receiverDetails.reduce((acc, cur) => {
+    const name = cur.userUid === currentUserUid ? 'me' : cur.displayName;
 
-    const tDateString = t.toLocaleString('en-US', { month: 'short', day: 'numeric' })
-    const nowDateString = now.toLocaleString('en-US', { month: 'short', day: 'numeric' })
-
-    if (
-      tDateString === nowDateString
-    ) {
-      return t.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
+    if (acc === '') {
+      return acc += name
     } else {
-      return tDateString
+      return acc += `, ${name}`
     }
+  }, '')
+
+  const handleOnClick = (type, value = '') => {
+    handleOnClickItem(mail.mailUid, type, value);
   }
+
+  const mailSentAt = (secs) => {
+    const t = getDateByTime(secs);
+    return t.toLocaleString(
+      'en-US',
+      {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true
+      }
+    )
+  }
+
   return (
-    <tr className={`flex h-10 py-2 text-sm antialiased font-bold bg-white cursor-pointer hover:shadow-xl ${thread.hasUnread ? 'bg-opacity-90' : 'bg-opacity-70'}`}>
-      <td className="flex items-center pl-2">
-        <IconButton
-          size="xs"
-          label="Select"
-          tooltipLocation="bottom"
-          imgComponent={
-            <MdCheckBoxOutlineBlank size="20px" color="gray"/>
-          }
-          onClickHandler={() => {}}
-        />
-      </td>
-      <td className="flex items-center">
-        {
-          thread.hasStars ? (
-            <IconButton
-              size="xs"
-              label="Unset Star"
-              tooltipLocation="bottom"
-              imgComponent={
-                <div className={`h-5 w-5 opacity-40 bg-cover bg-active-star`} />
-              }
-              onClickHandler={() => {}}
-            />
-          )
-          : (
-            <IconButton
-              size="xs"
-              label="Set Star"
-              tooltipLocation="bottom"
-              imgComponent={
-                <div className={`h-5 w-5 opacity-40 bg-cover bg-inactive-star`} />
-              }
-              onClickHandler={() => {}}
-            />
-          )
-        }
-      </td>
-      <td className="flex items-center">
-        <div className="flex items-center justify-center pr-3">
+    <div className="pb-10">
+      <div className="flex">
+        <div
+          className="flex items-center justify-center h-20 px-4 cursor-pointer min-w-40"
+          onClick={() => handleOnClick('expand', false)}
+        >
+          <Image src={mail.senderDetails.photoUrl} height="40px" width="40px" alt="mail-profile" className="rounded-full"/>
+        </div>
+        <div className="flex flex-col flex-auto w-full pb-5">
+
+          {/* Mail Header */}
+          <div className="w-full pt-5 cursor-pointer">
+            <table className="w-full">
+              <tbody>
+                <tr className="flex pr-2">
+                  <td
+                    className="flex items-center flex-auto"
+                    onClick={() => handleOnClick('expand', false)}
+                  >
+                    <span className="text-sm antialiased font-bold">
+                      {mail.senderDetails.displayName}
+                    </span>
+                    <span className="ml-1 text-xs antialiased text-gray-700">
+                      {`<${mail.senderDetails.email}>`}
+                    </span>
+                  </td>
+                  <td className="flex items-center">
+                    <span className="text-xs text-gray-500">
+                      {mailSentAt(mail.sentAt)}
+                    </span>
+                  </td>
+                  <td className="relative w-5 ml-5">
+                    <div className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
+                      {
+                        mail.isStarred ? (
+                          <IconButton
+                            size="medium"
+                            onClickHandler={() => handleOnClick('star', false)}
+                            imgComponent={
+                              <MdStar size="20px" color="#F4C86A" />
+                            }
+                          />
+                        )
+                        : (
+                          <IconButton
+                            size="medium"
+                            onClickHandler={() => handleOnClick('star', true)}
+                            imgComponent={
+                              <MdStarBorder size="20px" color="rgb(87,87,87)" />
+                            }
+                          />
+                        )
+                      }
+                    </div>
+                  </td>
+                  <td className={`relative w-5 ml-5 ${(isLast || mail.isExpanded) ? 'block' : 'hidden'}`}>
+                    <div className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
+                      <IconButton
+                        size="medium"
+                        label="Reply"
+                        tooltipLocation="bottom"
+                        onClickHandler={() => handleOnClick('reply', {
+                          senderEmail: mail.senderDetails.email,
+                          senderDisplayName: mail.senderDetails.displayName,
+                          senderUserUid: mail.senderUid,
+                          sourceThreadId: mail.sourceThreadId
+                        })}
+                        imgComponent={
+                          <MdReply size="20px" color="rgb(87,87,87)" />
+                        }
+                      />
+                    </div>
+                  </td>
+                  <td className={`relative w-5 ml-5 ${(isLast || mail.isExpanded) ? 'block' : 'hidden'}`}>
+                    <div className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
+                      <IconButton
+                        size="medium"
+                        label="More"
+                        tooltipLocation="bottom"
+                        imgComponent={
+                          <MdMoreVert size="20px" color="rgb(87,87,87)" />
+                        }
+                      />
+                    </div>
+                  </td>
+                </tr>
+                <tr onClick={() => handleOnClick('expand', false)}>
+                <td className="text-xs text-gray-500">
+                  <span className="overflow-ellipsis">
+                    {
+                      (isLast || mail.isExpanded)
+                        ? `to ${receiverNames}`
+                        : `${mail.content}`
+                    }
+                  </span>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
           {
-            thread.isImportant ? (
-              <IconButton
-                size="xs"
-                label="Set Unimportant"
-                tooltipLocation="bottom"
-                imgComponent={
-                  <div className={`h-5 w-5 opacity-40 bg-cover bg-active-important`} />
-                }
-                onClickHandler={() => {}}
-              />
-            )
-            : (
-              <IconButton
-                size="xs"
-                label="Set Important"
-                tooltipLocation="bottom"
-                imgComponent={
-                  <div className={`h-5 w-5 opacity-40 bg-cover bg-inactive-important`} />
-                }
-                onClickHandler={() => {}}
-              />    
-            )
+            // Mail Content
+            (isLast || mail.isExpanded) &&
+            <div className="mt-2">
+              <div className="text-sm whitespace-pre-wrap">
+                {mail.content}
+              </div>
+            </div>
           }
         </div>
-      </td>
-      <td className="flex items-center max-w-2xl flex-basis-168">
-        <div className="truncate">
-          {thread.threadParticipants.join(', ')}
-        </div>
-        {
-          <span className="ml-1 text-xs antialiased text-gray-500">
-            {
-              (thread.threadParticipants.length > 1 && Object.keys(thread.linkedMailUids).length > 1) &&
-              thread.threadParticipants.length
-            }
-          </span>
-        }
-      </td>
-      <td className="flex items-center flex-auto min-w-0">
-        <div className="truncate">
-          {thread.headMail.subject}
-        </div>
-      </td>
-      <td className="flex items-center pr-4 flex-basis-56">
-        <div className="truncate">
-          {threadCreatedAt(thread.headMail.createdAt)}
-        </div>
-      </td>
-    </tr>
+      </div>
+      {
+        isLast && (
+          <div className="flex items-center py-4 pl-16 space-x-3">
+            <div
+              className="inline-flex items-center justify-center px-4 py-1.5 border rounded-sm cursor-pointer hover:bg-gray-200 hover:bg-opacity-50 ml-1"
+              onClick={() => handleOnClick('reply', {
+                senderEmail: mail.senderDetails.email,
+                senderDisplayName: mail.senderDetails.displayName,
+                senderUserUid: mail.senderUid,
+                sourceThreadId: mail.sourceThreadId
+              })}
+            >
+              <MdReply size="20px" color="rgb(87,87,87)" />
+              <span className="ml-2 text-sm tracking-wide text-gray-600">
+                Reply
+              </span>
+            </div>
+            <div
+              className="inline-flex items-center justify-center px-4 py-1.5 border rounded-sm cursor-pointer hover:bg-gray-200 hover:bg-opacity-50"
+              onClick={() => handleOnClick('forward', {
+                senderEmail: '',
+                senderDisplayName: '',
+                senderUserUid: '',
+                sourceThreadId: ''
+              })}
+            >
+              <MdForward size="20px" color="rgb(87,87,87)" />
+              <span className="ml-2 text-sm tracking-wide text-gray-600">
+                Forward
+              </span>
+            </div>
+          </div>
+        )
+      }
+    </div>
   )
 }
 
-const areEqual = (prevProps, nextProps) => {
-  return prevProps.thread.threadId === nextProps.thread.threadId &&
-    prevProps.thread.headMail.mailUid === nextProps.thread.headMail.mailUid &&
-    prevProps.thread.hasStars === nextProps.thread.hasStars &&
-    prevProps.thread.hasUnread === nextProps.thread.hasUnread &&
-    prevProps.thread.isDeleted === nextProps.thread.isDeleted &&
-    prevProps.thread.isImportant === nextProps.thread.isImportant &&
-    prevProps.thread.isSelected === nextProps.thread.isSelected
-
-}
-
-export default React.memo(MailListItem, areEqual)
+export default MailListItem;

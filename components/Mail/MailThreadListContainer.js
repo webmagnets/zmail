@@ -1,33 +1,20 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import MailListAction from './MailListAction';
-import MailListContainer from './MailListContainer';
+import MailThreadListAction from './MailThreadListAction';
+import MailThreadListWrapper from './MailThreadListWrapper';
 
-export default function MailContainer({ hash }) {
+const MailThreadListContainer = ({ category }) => {
   // Base Redux Current Mail Thread State
   const curMailThreads = useSelector(({ mailThread }) => mailThread.curMailThreads);
-  
-  // Threads with Select Option
-  const [threadsWithSelectOption, setThreadsWithSelectOption] = useState([]);
+
   const [selectedThreads, setSelectedThreads] = useState([]);
-  
+
   useEffect(() => {
-    setThreadsWithSelectOption(
-      curMailThreads.map(thread => {
-        return {
-          ...thread,
-          isSelected: false
-        }
-      })
-    )
+    setSelectedThreads(curMailThreads.filter((thread) => thread.isSelected))
   }, [curMailThreads])
 
-  useEffect(() => {
-    setSelectedThreads(threadsWithSelectOption.filter((thread) => thread.isSelected))
-  }, [threadsWithSelectOption])
-
   const handleSelectAll = () => {
-    const cp = [...threadsWithSelectOption];
+    const cp = [...curMailThreads];
 
     // Select All Threads
     setThreadsWithSelectOption(
@@ -45,7 +32,7 @@ export default function MailContainer({ hash }) {
   }
 
   const onSelectThread = (thread) => {
-    const cp = [...threadsWithSelectOption];
+    const cp = [...curMailThreads];
     const index = cp.findIndex(el => el.threadId === thread.threadId);
 
     cp[index] = {
@@ -58,15 +45,17 @@ export default function MailContainer({ hash }) {
 
   return (
     <div className="flex flex-col">
-      <MailListAction
+      <MailThreadListAction
         selectedThreads={selectedThreads}
         handleSelectAll={handleSelectAll}
       />
-      <MailListContainer
-        hash={hash}
-        threadsWithSelectOption={threadsWithSelectOption}
+      <MailThreadListWrapper
+        category={category}
+        curMailThreads={curMailThreads}
         onSelectThread={onSelectThread}
       />
     </div>
   )
 }
+
+export default MailThreadListContainer;

@@ -1,35 +1,34 @@
-import { MdInbox, MdStar } from 'react-icons/md'
 import PanelLeftListItem from './PanelLeftListItem'
 
-export default function PanelLeftList({ hash }) {
+const PanelLeftList = ({ category }) => {
   const categoryItems = [
     {
       label: 'Inbox',
-      hash: 'inbox'
+      category: 'inbox'
     },
     {
       label: 'Starred',
-      hash: 'starred'
+      category: 'starred'
     },
     {
       label: 'Important',
-      hash: 'important'
+      category: 'important'
     },
     {
       label: 'Sent',
-      hash: 'sent'
+      category: 'sent'
     },
     {
       label: 'Drafts',
-      hash: 'drafts'
+      category: 'drafts'
     },
     {
       label: 'Spam',
-      hash: 'spam'
+      category: 'spam'
     },
     {
       label: 'Trash',
-      hash: 'trash'
+      category: 'trash'
     },
   ]
 
@@ -38,10 +37,12 @@ export default function PanelLeftList({ hash }) {
       {
         categoryItems.map(item => {
           return (
-            <PanelLeftListItem key={item.hash} item={item} isActive={hash === item.hash}/>
+            <PanelLeftListItem key={item.category} item={item} isActive={category === item.category}/>
           )
         })
       }
     </div>
   )
 }
+
+export default PanelLeftList

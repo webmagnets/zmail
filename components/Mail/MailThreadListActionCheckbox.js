@@ -4,10 +4,12 @@ import {
   MdIndeterminateCheckBox
 } from 'react-icons/md';
 
-export default function MailListActionCheckbox() {
+const MailListActionCheckbox = () => {
   return (
     <div>
       Checkbox
     </div>
   )
 }
+
+export default MailListActionCheckbox;

@@ -19,7 +19,7 @@ import {
   setMailThreads
 } from '../reducers/store/mailThread';
 
-export default function Home() {
+const Home = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   const userHashMap = useSelector(({ user }) => user.userHashMap);
@@ -53,7 +53,7 @@ export default function Home() {
 
   const loginWithUser = (uid) => {
     dispatch(setCurrentUser(userHashMap[uid]));
-    router.push('/mail');
+    router.push('/mail/inbox');
   }
 
   return (
@@ -95,7 +95,7 @@ export default function Home() {
                   return (
                     <div
                       key={uid}
-                      className="flex justify-between px-2 py-1 border-2 rounded-md cursor-pointer  hover:bg-gray-200 hover:bg-opacity-40"
+                      className="flex justify-between px-2 py-1 border-2 rounded-md cursor-pointer hover:bg-gray-200 hover:bg-opacity-40"
                       onClick={() => loginWithUser(uid)}
                     >
                       <div className="flex">
@@ -124,3 +124,5 @@ export default function Home() {
     </div>
   )
 }
+
+export default Home;

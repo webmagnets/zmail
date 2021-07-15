@@ -1,6 +1,5 @@
 export const SET_MAIL_THREADS = 'SET_MAIL_THREADS';
 export const SET_CURRENT_MAIL_THREADS = 'SET_CURRENT_MAIL_THREADS';
-export const ADD_MAIL_THREAD = 'ADD_MAIL_THREAD';
 export const CHANGE_MAIL_THREAD = 'CHANGE_MAIL_THREAD';
 
 export const setMailThreads = (mailThreads) => ({
@@ -48,12 +47,8 @@ const mailThread = (state = initialState, action) => {
       }
     }
 
-    case ADD_MAIL_THREAD: {
-      return state
-    }
-
     case CHANGE_MAIL_THREAD: {
-      const updatedMailThreads = [...curMailThreads];
+      const updatedMailThreads = [...state.curMailThreads];
       const threadIndex = updatedMailThreads.findIndex(el => el.threadId === action.payload.threadId);
 
       updatedMailThreads[threadIndex] = {
@@ -61,18 +56,18 @@ const mailThread = (state = initialState, action) => {
         ...action.payload.changes
       }
 
-      const updatedMailThreadsHashMap = { ...mailThreadsHashMap }[action.payload.userUid];
+      const updatedMailThreadsHashMap = { ...state.mailThreadsHashMap }[action.payload.userUid];
       const hashMapThreadIndex = updatedMailThreadsHashMap.findIndex(el => el.threadId === action.payload.threadId);
 
       updatedMailThreadsHashMap[hashMapThreadIndex] = {
-        ...updatedMailThreadsHashMap,
+        ...updatedMailThreadsHashMap[hashMapThreadIndex],
         ...action.payload.changes
       }
 
       return {
         mailThreadsHashMap: {
           ...state.mailThreadsHashMap,
-          [userUid]: updatedMailThreadsHashMap
+          [action.payload.userUid]: updatedMailThreadsHashMap
         },
         curMailThreads: updatedMailThreads
       }

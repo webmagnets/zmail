@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import IconButton from '../Button/IconButton';
 
-export default function PanelRight() {
+const PanelRight = () => {
   const panelRightItems = [
     {
       label: 'Calendar',
@@ -22,7 +22,7 @@ export default function PanelRight() {
   ]
 
   return (
-    <div className="flex flex-col items-center py-2 space-y-4 border-l  min-w-56 border-opacity-20">
+    <div className="flex flex-col items-center py-2 space-y-4 border-l min-w-56 border-opacity-20">
       {
         panelRightItems.map(({label, src}, i) => {
           return (
@@ -43,3 +43,5 @@ export default function PanelRight() {
     </div>
   )
 }
+
+export default PanelRight;

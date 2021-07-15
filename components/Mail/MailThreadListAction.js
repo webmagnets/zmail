@@ -5,14 +5,13 @@ import {
   MdDrafts,
   MdMarkunread,
   MdErrorOutline
-
 } from 'react-icons/md';
 import IconButton from '../Button/IconButton';
 
-export default function MailListAction({
+const MailThreadListAction = ({
   selectedThreads,
   handleSelectAll
-}) {
+}) => {
   return (
     <div className="flex items-center justify-start h-12">
       <div></div>
@@ -77,3 +76,5 @@ export default function MailListAction({
     </div>
   )
 }
+
+export default MailThreadListAction;

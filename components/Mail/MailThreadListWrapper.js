@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import MailList from './MailList';
-import MailSection from './MailSection';
+import MailThreadList from './MailThreadList';
+import MailThreadListSection from './MailThreadListSection';
 
-export default function MailListContainer({
-  hash,
-  threadsWithSelectOption,
+const MailThreadListWrapper = ({
+  category,
+  curMailThreads,
   onSelectThread
-}) {
+}) => {
   // For Inbox
   const [inboxReadThreads, setInboxReadThreads] = useState([])
   const [inboxUnreadThreads, setInboxUnreadThreads] = useState([]);
@@ -15,11 +15,11 @@ export default function MailListContainer({
   const [isUnreadOpen, setIsUnreadOpen] = useState(true);
 
   useEffect(() => {
-    if (hash === 'inbox') {
+    if (category === 'inbox') {
       const read = [];
       const unread = [];
 
-      threadsWithSelectOption.forEach(thread => {
+      curMailThreads.forEach(thread => {
         if (thread.hasUnread) {
           unread.push(thread);
         } else {
@@ -30,7 +30,7 @@ export default function MailListContainer({
       setInboxReadThreads(read);
       setInboxUnreadThreads(unread);
     }
-  }, [hash, threadsWithSelectOption])
+  }, [category, curMailThreads])
 
   const onClickSection = (type) => {
     if (type === 'read') {
@@ -43,10 +43,10 @@ export default function MailListContainer({
   return (
     <div className="overflow-y-auto">
       {
-        hash === 'inbox'
+        category === 'inbox'
         ? (
           <>
-            <MailSection
+            <MailThreadListSection
               label="Unread"
               type="unread"
               isOpen={isUnreadOpen}
@@ -54,12 +54,12 @@ export default function MailListContainer({
             />
             {
               isUnreadOpen &&
-              <MailList
+              <MailThreadList
                 threads={inboxUnreadThreads}
                 onSelectThread={onSelectThread}
               />
             }
-            <MailSection
+            <MailThreadListSection
               label="Everything else"
               type="read"
               isOpen={isReadOpen}
@@ -67,7 +67,7 @@ export default function MailListContainer({
             />
             {
               isReadOpen &&
-              <MailList
+              <MailThreadList
                 threads={inboxReadThreads}
                 onSelectThread={onSelectThread}
               /> 
@@ -75,8 +75,8 @@ export default function MailListContainer({
           </>
         )
         : (
-          <MailList
-            threads={threadsWithSelectOption}
+          <MailThreadList
+            threads={curMailThreads}
             onSelectThread={onSelectThread}
           />
         )
@@ -84,3 +84,5 @@ export default function MailListContainer({
     </div>
   )
 }
+
+export default MailThreadListWrapper

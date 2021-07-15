@@ -1,11 +1,11 @@
 import { MdKeyboardArrowDown, MdKeyboardArrowUp } from 'react-icons/md';
 
-export default function MailSection({
+const MailThreadListSection = ({
   label,
   type,
   isOpen,
   onClickHandler
-}) {
+}) => {
   return (
     <div className="flex items-center justify-between h-12 mr-4 border-b border-opacity-20">
       <div
@@ -29,3 +29,5 @@ export default function MailSection({
     </div>
   )
 }
+
+export default MailThreadListSection;

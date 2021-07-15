@@ -12,9 +12,9 @@ export default function Header() {
   } = useSelector(state => state.user.currentUser);
 
   return (
-    <div className="flex w-full p-2 border-b  border-opacity-20">
+    <div className="flex w-full p-2 border-b border-opacity-20">
       {/* Right Section */}
-      <div className="flex items-center justify-start w-1/5 pl-2 text-2xl text-white  min-w-248">
+      <div className="flex items-center justify-start w-1/5 pl-2 text-2xl text-white min-w-248">
         <div className="p-1 ml-1 mr-2">
           <IconButton
             size="medium"
@@ -35,10 +35,15 @@ export default function Header() {
       {/* Middle Section */}
       <div className="flex-auto">
         <div
-          className="flex justify-center max-w-screen-md py-2 bg-gray-300 rounded-md  align-items bg-opacity-20"
+          className="flex justify-center max-w-screen-md py-2 bg-gray-300 rounded-md align-items bg-opacity-20"
         >
-          <div className="flex items-center justify-center px-3 py-2">
-            <MdSearch size="24px" color="white" />
+          <div className="flex items-center justify-center px-3 py-1">
+            <IconButton
+              size="xs"
+              label="Show Search Options"
+              tooltipLocation="botttom"
+              imgComponent={<MdSearch size="24px" color="white" />}
+            />
           </div>
           <div className="flex items-center justify-center flex-auto">
             <input
@@ -47,8 +52,13 @@ export default function Header() {
               className="w-full text-white placeholder-white bg-transparent outline-none"
             />
           </div>
-          <div className="flex items-center justify-center px-3 py-2">
-            <MdTune size="24px" color="white" />
+          <div className="flex items-center justify-center px-3 py-1">
+            <IconButton
+              size="xs"
+              label="Show Search Options"
+              tooltipLocation="botttom"
+              imgComponent={<MdTune size="24px" color="white" />}
+            />
           </div>
         </div>
       </div>
