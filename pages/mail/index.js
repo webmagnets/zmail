@@ -1,12 +1,11 @@
 import Head from 'next/head'
-import Image from 'next/image'
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import MailLayout from '../../components/Layouts/MailLayout';
-import MailActionContainer from '../../components/Mail/MailActionContainer';
 import MailContainer from '../../components/Mail/MailContainer';
 import { useMailThreads } from '../../hooks/mailThread';
+import { setCurrentMailThreads } from '../../reducers/store/mailThread';
 import { setCurrentUser } from '../../reducers/store/user';
 
 export default function Mail() {
@@ -15,29 +14,36 @@ export default function Mail() {
     such as inbox, starred, important, etc.
   */
   const [hash, setHash] = useState('');
-  const dispatch = useDispatch();
+  const currentUser = useSelector(state => state.user.currentUser);
   const mailThreads = useMailThreads(hash);
+  const dispatch = useDispatch();
 
   const router = useRouter();
 
-  // Test User Set
-  const userHashMap = useSelector(state => state.user.userHashMap);
   useEffect(() => {
-    dispatch(setCurrentUser(userHashMap['Rick-1234']));
-  }, [])
+    if (currentUser.uid === '') {
+      alert('Please select a user in the landing page to proceed to Mail Page.')
+      router.push('/')
+    }
+  }, [currentUser])
 
   useEffect(() => {
-    const handleHashChange = () => {
-      setHash((window.location.hash).replace('#', ''));
-    }
+    const hashRoute = router.asPath.match(/#([a-z0-9]+)/gi);
 
-    window.addEventListener('hashchange', handleHashChange);
-    return () => {
-      window.removeEventListener('hashchange', handleHashChange)
+    console.log(hashRoute);
+    
+    if (hashRoute && hashRoute.length === 1) {
+      const hashValue = hashRoute[0].replace('#', '');
+      setHash(hashValue);
+    } else {
+      router.push('/mail#inbox');
     }
-  }, [])
+  }, [router.asPath])
 
-  console.log(router);
+  useEffect(() => {
+    console.log("MailThreads Changed: ", mailThreads);
+    dispatch(setCurrentMailThreads(mailThreads));
+  }, [mailThreads, dispatch])
 
   return (
     <div>
@@ -47,9 +53,8 @@ export default function Mail() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <MailLayout>
-        <MailActionContainer />
-        <MailContainer />
+      <MailLayout hash={hash}>
+        <MailContainer hash={hash} />
       </MailLayout>
     </div>
   )

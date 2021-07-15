@@ -1,23 +1,11 @@
 import Image from 'next/image';
 import PanelLeftList from './PanelLeftList';
 
-export default function PanelLeft () {
+export default function PanelLeft ({ hash }) {
   return (
     <div className="min-w-248">
-      <div className="my-4 pl-2">
-        <button className="
-          flex
-          justify-center
-          items-center
-          bg-white
-          rounded-full
-          h-12
-          font-medium
-          text-sm
-          min-w-56
-          shadow-md
-          p-3
-        ">
+      <div className="pl-2 my-4">
+        <button className="flex items-center justify-center h-12 p-3 text-sm font-medium bg-white rounded-full shadow-md  min-w-56">
           <Image
             src="/mailComposeIcon.png"
             height="32px"
@@ -27,7 +15,7 @@ export default function PanelLeft () {
           <span className="pr-3 ml-3 text-gray-600">Compose</span>
         </button>
       </div>
-      <PanelLeftList />
+      <PanelLeftList hash={hash} />
     </div>
   )
 }

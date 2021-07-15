@@ -13,6 +13,7 @@ module.exports = {
         '3/4': '75%',
         'full': '100%',
         '56': '56px',
+        '168': '168px',
         '248': '248px'
        },
        backgroundImage: theme => ({
@@ -23,8 +24,16 @@ module.exports = {
          'spam': "url('/spam.png')",
          'drafts': "url('/drafts.png')",
          'trash': "url('/trash.png')",
+         'active-important': "url('/active-important.png')",
+         'active-star': "url('/active-star.png')",
+         'inactive-important': "url('/inactive-important.png')",
+         'inactive-star': "url('/inactive-star.png')",
          'background': "url('/background.jpeg')"
-       })
+       }),
+       flex: {
+        'basis-56': '0 56px',
+         'basis-168': '0 168px'
+       }
     },
   },
   variants: {

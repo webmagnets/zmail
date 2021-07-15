@@ -2,13 +2,13 @@ import Header from '../Header/Header';
 import PanelLeft from '../Panel/PanelLeft';
 import PanelRight from '../Panel/PanelRight';
 
-export default function MailLayout({ children }) {
+export default function MailLayout({ children, hash }) {
   return (
-    <div className="bg-background bg-cover w-screen min-h-screen">
+    <div className="flex flex-col w-screen min-h-screen bg-cover bg-background">
       <Header />
-      <div className="flex">
-        <PanelLeft />
-        <div>
+      <div className="flex flex-1">
+        <PanelLeft hash={hash} />
+        <div className="flex-auto">
           {children}
         </div>
         <PanelRight />

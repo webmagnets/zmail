@@ -1,11 +1,24 @@
 import MailListItem from './MailListItem'
 
-export default function MailList() {
+export default function MailList({
+  threads = [],
+  onSelectThread
+}) {
   return (
     <div>
-      <table className="table-fixed border-collapse p-0 w-full">
+      <table className="w-full p-0 border-collapse table-fixed">
         <tbody>
-          <MailListItem />
+          {
+            threads.map(thread => {
+              return (
+                <MailListItem
+                  key={thread.threadUid}
+                  thread={thread}
+                  onSelectThread={onSelectThread}
+                />
+              )
+            })
+          }
         </tbody>
       </table>
     </div>

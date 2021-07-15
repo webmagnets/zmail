@@ -1,6 +1,10 @@
 import { useState } from 'react';
 
 const wrapperSizeLookup = {
+  'xs': {
+    height: 'h-7',
+    width: 'w-8'
+  },
   'small': {
     height: 'h-9',
     width: 'w-9'
@@ -12,6 +16,10 @@ const wrapperSizeLookup = {
 }
 
 const inkSizeLookup = {
+  'xs': {
+    height: 'h-10',
+    width: 'w-10'
+  },
   'small': {
     height: 'h-10',
     width: 'w-10'
@@ -105,9 +113,8 @@ const IconButton = ({
               rounded-md
               transform
               left-1/2
-              transform
               -translate-x-1/2
-              -bottom-11
+              -bottom-8
               bg-opacity-60
               hidden
               group-hover:block

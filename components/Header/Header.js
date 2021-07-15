@@ -12,24 +12,9 @@ export default function Header() {
   } = useSelector(state => state.user.currentUser);
 
   return (
-    <div className="
-      flex
-      w-full
-      p-2
-      border-b
-      border-opacity-25
-    ">
+    <div className="flex w-full p-2 border-b  border-opacity-20">
       {/* Right Section */}
-      <div className="
-        min-w-248
-        w-1/5
-        pl-2
-        text-white
-        text-2xl
-        flex
-        justify-start
-        items-center
-      ">
+      <div className="flex items-center justify-start w-1/5 pl-2 text-2xl text-white  min-w-248">
         <div className="p-1 ml-1 mr-2">
           <IconButton
             size="medium"
@@ -41,7 +26,7 @@ export default function Header() {
             onClickHandler={() => {}}
           />
         </div>
-        <div className="flex justify-center items-center">
+        <div className="flex items-center justify-center">
           <Image src="/mailIcon.png" height="25px" width="32px" alt="mail-icon"/>
           <p className="ml-4">Zmail</p>
         </div>
@@ -50,35 +35,26 @@ export default function Header() {
       {/* Middle Section */}
       <div className="flex-auto">
         <div
-          className="
-            max-w-screen-md
-            flex
-            justify-center
-            align-items
-            rounded-md
-            bg-gray-300
-            bg-opacity-20
-            py-2
-          "
+          className="flex justify-center max-w-screen-md py-2 bg-gray-300 rounded-md  align-items bg-opacity-20"
         >
-          <div className="flex justify-center items-center py-2 px-3">
+          <div className="flex items-center justify-center px-3 py-2">
             <MdSearch size="24px" color="white" />
           </div>
-          <div className="flex-auto flex justify-center items-center">
+          <div className="flex items-center justify-center flex-auto">
             <input
               type="text"
               placeholder="Search mail"
-              className="bg-transparent placeholder-white w-full outline-none"
+              className="w-full text-white placeholder-white bg-transparent outline-none"
             />
           </div>
-          <div className="flex justify-center items-center py-2 px-3">
+          <div className="flex items-center justify-center px-3 py-2">
             <MdTune size="24px" color="white" />
           </div>
         </div>
       </div>
 
       {/* Left Section */}
-      <div className="flex justify-end items-center pl-6 pr-2">
+      <div className="flex items-center justify-end pl-6 pr-2">
         <IconButton
           size="medium"
           label="Profile"
@@ -89,7 +65,7 @@ export default function Header() {
               alt="Profile Picture"
               width="32px"
               height="32px"
-              className="rounded-full flex justify-center items-center z-10"
+              className="z-10 flex items-center justify-center rounded-full"
             />
           }
           onClickHandler={() => {}}

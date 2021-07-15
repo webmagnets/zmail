@@ -22,16 +22,7 @@ export default function PanelRight() {
   ]
 
   return (
-    <div className="
-      min-w-56
-      border-l
-      border-opacity-25
-      flex
-      flex-col
-      items-center
-      space-y-4
-      py-2
-    ">
+    <div className="flex flex-col items-center py-2 space-y-4 border-l  min-w-56 border-opacity-20">
       {
         panelRightItems.map(({label, src}, i) => {
           return (

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { getMailWithUserInfo } from  '../lib/utils';
+import { setCurrentMailThreads } from '../reducers/store/mailThread';
 
 // Constants For Condition Return Value
 const VALID = true;
@@ -20,7 +21,7 @@ const checkMailThreadByCondition = (
   {
     threadCreatorUid,
     isDeleted,
-    threadId
+    headMailUid
   },
   mailHashMap,
   returnValue
@@ -31,7 +32,7 @@ const checkMailThreadByCondition = (
     (checkIsSpam && (threadCreatorUid in spammedUserUids)) ||
     (checkIsBlock && (threadCreatorUid in blockedUserUids)) ||
     (checkIsDelete && isDeleted) ||
-    (checkIsSent && (mailHashMap[threadId].senderUid === userUid))
+    (checkIsSent && (mailHashMap[headMailUid].senderUid === userUid))
   )  {
     return returnValue;
   }
@@ -42,76 +43,61 @@ const checkMailThreadByCondition = (
 // Custom Hooks
 
 export const useMailThreads = (type) => {
-  const INBOX = 'INBOX';
-  const STARRED = 'STARRED';
-  const IMPORTANT = 'IMPORTANT';
-  const SENT = 'SENT';
-  const SPAM = 'SPAM';
-  const TRASH = 'TRASH';
+  const INBOX = 'inbox';
+  const STARRED = 'starred';
+  const IMPORTANT = 'important';
+  const SENT = 'sent';
+  const SPAM = 'spam';
+  const TRASH = 'trash';
 
-  const defaultState = () => {
-    return {
-      read: [],
-      unread: [],
-      starred: [],
-      important: [],
-      spam: [],
-      sent: [],
-      trash: []
-    }
-  }
+  const defaultState = () => []
 
+  const [curType, setCurType] = useState(null);
   const [mailThreads, setMailThreads] = useState(defaultState);
 
-  const currentUser = useSelector(state => state.user.currentUser);
-  const allMailThreads = useSelector(state => state.mailThread.mailThreads);
-  const mailHashMap = useSelector(state => state.mail.mailHashMap);
-  const userHashMap = useSelector(state => state.user.userHashMap);
+  const currentUser = useSelector(({ user }) => user.currentUser);
+  const userHashMap = useSelector(({ user }) => user.userHashMap);
+  const mailThreadsHashMap = useSelector(({ mailThread }) => mailThread.mailThreadsHashMap);
+  const mailHashMap = useSelector(({ mail }) => mail.mailHashMap);
+  useEffect(() => {
+    if (curType === null) {
+      setCurType(type);
+    } else if (curType !== type) {
+      setCurType(type)
+    }
+  }, [type])
 
   useEffect(() => {
-
+  console.log("UseMailThreads - Type: ", type)
   /*
     INBOX:
     - All mail threads
-    - Read and Unread separated
+    - Read and Unread
     - X Spammed
     - X Blocked
     - X Trashed
     - X Sent
-
-    Return Type: {
-      read: [ ...mailThreads ],
-      unread: [ ...mailThreads ]
-    }
   */
 
   const inbox = () => {
-    return allMailThreads
+    return mailThreadsHashMap[currentUser.userUid]
       // Filter threads that belong to inbox category
       .filter((thread) => {
         return checkMailThreadByCondition([1, 1, 1, 1], currentUser, thread, mailHashMap, INVALID)
       })
-      // Fetch head mail information
-      .map(thread => {
-        return {
-          ...thread,
-          threadParticipants: getUserDisplayNamesByUid(thread.threadParticipants, userHashMap),
-          headMail: getMailWithUserInfo(thread.headMailUid, mailHashMap, userHashMap)
-        }
-      })
-      // Classify threads by read status
-      .reduce((acc, curThread) => {
-        if (curThread.hasUnread) {
-          acc['unread'].push(curThread);
-        } else {
-          acc['read'].push(curThread);
-        }
+      // // Classify threads by read status
+      // .reduce((acc, curThread) => {
+      //   if (curThread.hasUnread) {
+      //     acc['unread'].push(curThread);
+      //   } else {
+      //     acc['read'].push(curThread);
+      //   }
         
-        return acc;
-      }, {
-        read: [],
-        unread: []
-      });
+      //   return acc;
+      // }, {
+      //   read: [],
+      //   unread: []
+      // });
   }
 
   /*
@@ -124,7 +110,7 @@ export const useMailThreads = (type) => {
   */
 
   const starred = () =>  {
-    return allMailThreads
+    return mailThreadsHashMap[currentUser.userUid]
       .filter(thread => {
         return (
           checkMailThreadByCondition([1, 1, 1, 1], currentUser, thread, mailHashMap, INVALID) &&
@@ -143,7 +129,7 @@ export const useMailThreads = (type) => {
   */
 
   const important = () =>  {
-    return allMailThreads
+    return mailThreadsHashMap[currentUser.userUid]
       .filter(thread => {
         return (
           checkMailThreadByCondition([1, 1, 1, 1], currentUser, thread, mailHashMap, INVALID) && 
@@ -158,15 +144,15 @@ export const useMailThreads = (type) => {
     - X Trashed
   */
 
-    const sent = () =>  {
-      return allMailThreads
-        .filter(thread => {
-          return (
-            checkMailThreadByCondition([0, 0, 0, 1], currentUser, thread, mailHashMap, VALID) &&
-            checkMailThreadByCondition([1, 1, 1, 0], currentUser, thread, mailHashMap, INVALID)
-          )
-        })
-    }
+  const sent = () =>  {
+    return mailThreadsHashMap[currentUser.userUid]
+      .filter(thread => {
+        return (
+          checkMailThreadByCondition([0, 0, 0, 1], currentUser, thread, mailHashMap, VALID) &&
+          checkMailThreadByCondition([1, 1, 1, 0], currentUser, thread, mailHashMap, INVALID)
+        )
+      })
+  }
 
   /*
     SPAMMED:
@@ -174,75 +160,100 @@ export const useMailThreads = (type) => {
     - X Trashed
   */
 
-    const spam = () =>  {
-      return allMailThreads
-        .filter(thread => {
-          return (
-            checkMailThreadByCondition([1, 0, 0, 0], currentUser, thread, mailHashMap, VALID) &&
-            checkMailThreadByCondition([0, 1, 1, 1], currentUser, thread, mailHashMap, INVALID)
-          )
-        })
-    }
+  const spam = () =>  {
+    return mailThreadsHashMap[currentUser.userUid]
+      .filter(thread => {
+        return (
+          checkMailThreadByCondition([1, 0, 0, 0], currentUser, thread, mailHashMap, VALID) &&
+          checkMailThreadByCondition([0, 1, 1, 1], currentUser, thread, mailHashMap, INVALID)
+        )
+      })
+  }
 
   /*
     TRASH:
     - All mail threads that have "isDeletetd" as true
   */
 
-    const trash = () =>  {
-      return allMailThreads
-        .filter(thread => {
-          return (
-            checkMailThreadByCondition([0, 0, 1, 0], currentUser, thread, mailHashMap, VALID) &&
-            checkMailThreadByCondition([1, 1, 0, 1], currentUser, thread, mailHashMap, INVALID)
-          )
-        })
-    }
+  const trash = () =>  {
+    return mailThreadsHashMap[currentUser.userUid]
+      .filter(thread => {
+        return (
+          checkMailThreadByCondition([0, 0, 1, 0], currentUser, thread, mailHashMap, VALID) &&
+          checkMailThreadByCondition([1, 1, 0, 1], currentUser, thread, mailHashMap, INVALID)
+        )
+      })
+  }
+
+  // Additional Wrapper to insert head mail information & participants names
+  const threadsWrapper = (threads) => {
+    return threads
+      .map(thread => {
+        return {
+          ...thread,
+          threadParticipants: getUserDisplayNamesByUid(thread.threadParticipants, userHashMap),
+          headMail: getMailWithUserInfo(thread.headMailUid, mailHashMap, userHashMap)
+        }
+      })
+  }
 
   switch (type) {
     case INBOX: {
-      setMailThreads({
-        ...inbox()
-      });
+      const inboxThreads = threadsWrapper(inbox());
+      console.log("Inbox Threads: ", inboxThreads);
+      setMailThreads([
+        ...inboxThreads
+      ]);
       return;
     }
 
     case STARRED: {
-      setMailThreads({
-        ...starred()
-      })
+      const starredThreads = threadsWrapper(starred());
+      console.log("Starred Threads: ", starredThreads);
+      setMailThreads([
+        ...starredThreads
+      ]);
       return;
     }
 
     case IMPORTANT: {
-      setMailThreads({
-        ...important()
-      })
+      const importantThreads = threadsWrapper(important());
+      console.log("Important Threads: ", importantThreads);
+      setMailThreads([
+        ...importantThreads
+      ]);
       return;
     }
 
     case SENT: {
-      setMailThreads({
-        ...sent()
-      })
+      const sentThreads = threadsWrapper(sent());
+      console.log("Sent Threads: ", sentThreads);
+      setMailThreads([
+        ...sentThreads
+      ]);
       return;
     }
 
     case SPAM: {
-      setMailThreads({
-        ...spam()
-      })
+      const spamThreads = threadsWrapper(spam());
+      console.log("Spam Threads: ", spamThreads);
+      setMailThreads([
+        ...spamThreads
+      ]);
       return;
     }
 
     case TRASH: {
-      setMailThreads({
-        ...trash()
-      })
+      const trashThreads = threadsWrapper(starred());
+      console.log("Trash Threads: ", trashThreads);
+      setMailThreads([
+        ...trashThreads
+      ]);
       return;
     }
 
     default:
+      console.log("Default")
       return;
   }
 
@@ -251,8 +262,8 @@ export const useMailThreads = (type) => {
     currentUser,
     userHashMap,
     mailHashMap,
-    allMailThreads
-  ])
+    mailThreadsHashMap
+  ], [curType])
 
   return mailThreads;
 }
