@@ -42,12 +42,16 @@ const checkMailThreadByCondition = (
 ) => {
   const [checkIsSpam, checkIsBlock, checkIsSent] = conditionBits;
 
-  if (
-    (checkIsSpam && (threadCreatorUid in spammedUserUids)) ||
-    (checkIsBlock && (threadCreatorUid in blockedUserUids)) ||
-    (checkIsSent && (mailHashMap[headMailUid].senderUid === userUid))
-  )  {
+  if (checkIsSpam && (threadCreatorUid in spammedUserUids)) {
     return returnValue;
+  }
+
+  if (checkIsBlock && (threadCreatorUid in blockedUserUids)) {
+    return returnValue
+  }
+
+  if (checkIsSent && (mailHashMap[headMailUid].senderUid === userUid)) {
+    return returnValue
   }
 
   return !returnValue;
@@ -170,8 +174,7 @@ export const useMailThreads = (type) => {
         .filter(thread => {
           return (
             checkMailThreadByCondition([1, 0, 0], currentUser, thread, mailHashMap, VALID) &&
-            checkMailThreadByCondition([0, 1, 1], currentUser, thread, mailHashMap, INVALID) &&
-            !checkIsThreadDeleted(thread)
+            checkMailThreadByCondition([0, 1, 1], currentUser, thread, mailHashMap, INVALID)
           )
         })
     }
@@ -179,11 +182,17 @@ export const useMailThreads = (type) => {
     /*
       TRASH:
       - All mail threads that have deleted mails
+      - Spammed mails do not show up in trash category
     */
 
     const trash = () =>  {
       return mailThreadsHashMap[currentUser.userUid]
-        .filter(thread => checkHasDeleted(thread))
+        .filter(thread => {
+          return (
+            checkMailThreadByCondition([1, 0, 0], currentUser, thread, mailHashMap, INVALID) &&
+            checkHasDeleted(thread)
+          )
+        })
     }
 
     // Additional Wrapper to insert head mail information & participants names

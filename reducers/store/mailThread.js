@@ -6,7 +6,7 @@ export const SET_SELECTED_MAIL_THREADS = 'SET_SELECTED_MAIL_THREADS'
 export const SET_READ_SECTION_OPEN_STATUS = 'SET_READ_SECTION_OPEN_STATUS'
 export const SET_UNREAD_SECTION_OPEN_STATUS = 'SET_UNREAD_SECTION_OPEN_STATUS'
 
-export const DELETE_SELECTED_MAIL_THREADS = 'DELETE_SELECTED_MAIL_THREADS'
+export const ACTION_ON_SELECTED_MAIL_THREADS = 'ACTION_ON_SELECTED_MAIL_THREADS'
 
 export const setMailThreads = (mailThreads) => ({
   type: SET_MAIL_THREADS,
@@ -48,7 +48,13 @@ export const setUnreadSectionStatus = (status) => ({
 })
 
 export const deleteSelectedMailThreads = () => ({
-  type: DELETE_SELECTED_MAIL_THREADS
+  type: ACTION_ON_SELECTED_MAIL_THREADS,
+  payload: 'delete'
+})
+
+export const recoverSelectedMailThreads = () => ({
+  type: ACTION_ON_SELECTED_MAIL_THREADS,
+  payload: 'recover'
 })
 
 const initialState = {
@@ -124,15 +130,44 @@ const mailThread = (state = initialState, action) => {
       }
     }
 
-    case DELETE_SELECTED_MAIL_THREADS: {
-      const updatedSelectedThreads = [...state.selectedMailThreads]
-        .map((thread) => {
-          const mailUidsWithoutHead = Object.keys(thread.linkedMailUids).filter(uid => uid !== thread.headMailUid);
-          return {
-            ...thread,
-            deletedMailUids: [thread.headMailUid, ...mailUidsWithoutHead]
-          }
-        })
+    case ACTION_ON_SELECTED_MAIL_THREADS: {
+      let updatedSelectedThreads;
+      let changedKey;
+      console.log(action.payload);
+
+      switch (action.payload) {
+        case 'delete': {
+          changedKey = 'deletedMailUids';
+          updatedSelectedThreads = [...state.selectedMailThreads]
+            .map((thread) => {
+              const mailUidsWithoutHead = Object.keys(thread.linkedMailUids).filter(uid => uid !== thread.headMailUid);
+              return {
+                ...thread,
+                deletedMailUids: [thread.headMailUid, ...mailUidsWithoutHead]
+              }
+            })
+          break;
+        }
+
+        case 'recover': {
+          changedKey = 'deletedMailUids';
+          updatedSelectedThreads = [...state.selectedMailThreads]
+            .map((thread) => {
+              return {
+                ...thread,
+                deletedMailUids: []
+              }
+            })
+          break;
+        }
+
+        default: {
+          updatedSelectedThreads = [...state.curMailThreads];
+          break;
+        }
+      }
+
+      console.log(updatedSelectedThreads)
       
       const userUid = state.curMailThreads[0].threadOwnerUid;
       const updatedMailThreads = [...state.curMailThreads];
@@ -141,8 +176,14 @@ const mailThread = (state = initialState, action) => {
       for (let i = 0; i < updatedSelectedThreads.length; i++) {
         const threadIndex = updatedMailThreads.findIndex(el => el.threadId === updatedSelectedThreads[i].threadId);
         const hashMapThreadIndex = updatedMailThreadsHashMap.findIndex(el => el.threadId === updatedSelectedThreads[i].threadId);
-        updatedMailThreads[threadIndex] = {...updatedSelectedThreads[i]}
-        updatedMailThreadsHashMap[hashMapThreadIndex] = {...updatedSelectedThreads[i]}
+        updatedMailThreads[threadIndex] = {
+          ...updatedMailThreads[threadIndex],
+          [changedKey]: updatedSelectedThreads[i][changedKey]
+        }
+        updatedMailThreadsHashMap[hashMapThreadIndex] = {
+          ...updatedMailThreadsHashMap[hashMapThreadIndex],
+          [changedKey]: updatedSelectedThreads[i][changedKey]
+        }
       }
 
       return {

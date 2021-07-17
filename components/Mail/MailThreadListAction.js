@@ -8,14 +8,17 @@ import {
   MdCheckBoxOutlineBlank,
   MdArrowDropDown,
   MdIndeterminateCheckBox,
-  MdCheckBox
+  MdCheckBox,
+  MdDeleteSweep
 } from 'react-icons/md';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteSelectedMailThreads, setReadSectionStatus, setSelectedMailThreads, setUnreadSectionStatus } from '../../reducers/store/mailThread';
+import useCategory from '../../hooks/category';
+import { deleteSelectedMailThreads, recoverSelectedMailThreads, setReadSectionStatus, setSelectedMailThreads, setUnreadSectionStatus } from '../../reducers/store/mailThread';
 import IconButton from '../Button/IconButton';
 
 const MailThreadListAction = () => {
   const dispatch = useDispatch();
+  const category = useCategory();
   const curMailThreads = useSelector(({ mailThread }) => mailThread.curMailThreads);
   const selectedMailThreads = useSelector(({ mailThread }) => mailThread.selectedMailThreads);
   
@@ -30,9 +33,10 @@ const MailThreadListAction = () => {
       dispatch(setUnreadSectionStatus(true));
     }
   }
+  console.log(selectedMailThreads);
   
   const checkbox = () => {
-    if (curMailThreads.length === selectedMailThreads.length) {
+    if (curMailThreads.length === selectedMailThreads.length && selectedMailThreads.length > 0) {
       return <MdCheckBox size="20px" color="white" />
     } else if (selectedMailThreads.length === 0) {
       return <MdCheckBoxOutlineBlank size="20px" color="white" />
@@ -42,7 +46,11 @@ const MailThreadListAction = () => {
   }
 
   const handleOnDelete = () => {
-    dispatch(deleteSelectedMailThreads())
+    dispatch(deleteSelectedMailThreads());
+  }
+
+  const handleOnRecover = () => {
+    dispatch(recoverSelectedMailThreads());
   }
 
   return (
@@ -95,12 +103,22 @@ const MailThreadListAction = () => {
         />
         <IconButton
           size="medium"
-          label="Delete"
+          label={
+            category !== 'trash'
+              ? 'Delete'
+              : 'Recover'
+          }
           tooltipLocation="bottom"
           imgComponent={
-            <MdDelete size="20px" color="white" />
+            category !== 'trash'
+              ? <MdDelete size="20px" color="white" />
+              : <MdDeleteSweep size="20px" color="white" />
           }
-          onClickHandler={handleOnDelete}
+          onClickHandler={
+            category !== 'trash'
+              ? handleOnDelete
+              : handleOnRecover
+          }
         />
         <IconButton
           size="medium"
