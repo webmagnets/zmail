@@ -1,9 +1,12 @@
+import { useSelector } from 'react-redux'
 import MailThreadListItem from './MailThreadListItem'
 
 const MailThreadList = ({
   threads = [],
   onSelectThread
 }) => {
+  const currentUser = useSelector(({ user }) => user.currentUser);
+
   return (
     <div>
       <table className="w-full p-0 border-collapse table-fixed">
@@ -13,6 +16,7 @@ const MailThreadList = ({
               return (
                 <MailThreadListItem
                   key={i}
+                  currentUser={currentUser}
                   thread={thread}
                   onSelectThread={onSelectThread}
                 />

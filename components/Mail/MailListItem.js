@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import { useState } from 'react';
 import { MdForward, MdMoreVert, MdReply, MdStar, MdStarBorder } from 'react-icons/md';
 import { getDateByTime } from '../../lib/utils';
 import IconButton from '../Button/IconButton';
@@ -6,10 +7,14 @@ import IconButton from '../Button/IconButton';
 const MailListItem = ({
   mail,
   isLast,
+  expandedMailUids,
+  onAddExpandedMailUids,
+  onRemoveExpandedMailUids,
   currentUserUid,
   handleOnClickItem
 }) => {
   console.log(mail);
+  
   const receiverNames = mail.receiverDetails.reduce((acc, cur) => {
     const name = cur.userUid === currentUserUid ? 'me' : cur.displayName;
 
@@ -22,6 +27,16 @@ const MailListItem = ({
 
   const handleOnClick = (type, value = '') => {
     handleOnClickItem(mail.mailUid, type, value);
+  }
+
+  const isExpanded = expandedMailUids.findIndex(el => el === mail.mailUid) !== -1;
+
+  const handleOnExpand = () => {
+    if (isExpanded) {
+      onRemoveExpandedMailUids(mail.mailUid);
+    } else {
+      onAddExpandedMailUids(mail.mailUid);
+    }
   }
 
   const mailSentAt = (secs) => {
@@ -40,11 +55,11 @@ const MailListItem = ({
   }
 
   return (
-    <div className="pb-10">
+    <div>
       <div className="flex">
         <div
           className="flex items-center justify-center h-20 px-4 cursor-pointer min-w-40"
-          onClick={() => handleOnClick('expand', false)}
+          onClick={() => handleOnExpand()}
         >
           <Image src={mail.senderDetails.photoUrl} height="40px" width="40px" alt="mail-profile" className="rounded-full"/>
         </div>
@@ -57,7 +72,7 @@ const MailListItem = ({
                 <tr className="flex pr-2">
                   <td
                     className="flex items-center flex-auto"
-                    onClick={() => handleOnClick('expand', false)}
+                    onClick={() => handleOnExpand()}
                   >
                     <span className="text-sm antialiased font-bold">
                       {mail.senderDetails.displayName}
@@ -95,7 +110,7 @@ const MailListItem = ({
                       }
                     </div>
                   </td>
-                  <td className={`relative w-5 ml-5 ${(isLast || mail.isExpanded) ? 'block' : 'hidden'}`}>
+                  <td className={`relative w-5 ml-5 ${(isLast || isExpanded) ? 'block' : 'hidden'}`}>
                     <div className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
                       <IconButton
                         size="medium"
@@ -113,7 +128,7 @@ const MailListItem = ({
                       />
                     </div>
                   </td>
-                  <td className={`relative w-5 ml-5 ${(isLast || mail.isExpanded) ? 'block' : 'hidden'}`}>
+                  <td className={`relative w-5 ml-5 ${(isLast || isExpanded) ? 'block' : 'hidden'}`}>
                     <div className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
                       <IconButton
                         size="medium"
@@ -126,11 +141,11 @@ const MailListItem = ({
                     </div>
                   </td>
                 </tr>
-                <tr onClick={() => handleOnClick('expand', false)}>
+                <tr onClick={() => handleOnExpand()}>
                 <td className="text-xs text-gray-500">
                   <span className="overflow-ellipsis">
                     {
-                      (isLast || mail.isExpanded)
+                      (isLast || isExpanded)
                         ? `to ${receiverNames}`
                         : `${mail.content}`
                     }
@@ -142,7 +157,7 @@ const MailListItem = ({
           </div>
           {
             // Mail Content
-            (isLast || mail.isExpanded) &&
+            (isLast || isExpanded) &&
             <div className="mt-2">
               <div className="text-sm whitespace-pre-wrap">
                 {mail.content}
@@ -151,40 +166,6 @@ const MailListItem = ({
           }
         </div>
       </div>
-      {
-        isLast && (
-          <div className="flex items-center py-4 pl-16 space-x-3">
-            <div
-              className="inline-flex items-center justify-center px-4 py-1.5 border rounded-sm cursor-pointer hover:bg-gray-200 hover:bg-opacity-50 ml-1"
-              onClick={() => handleOnClick('reply', {
-                senderEmail: mail.senderDetails.email,
-                senderDisplayName: mail.senderDetails.displayName,
-                senderUserUid: mail.senderUid,
-                sourceThreadId: mail.sourceThreadId
-              })}
-            >
-              <MdReply size="20px" color="rgb(87,87,87)" />
-              <span className="ml-2 text-sm tracking-wide text-gray-600">
-                Reply
-              </span>
-            </div>
-            <div
-              className="inline-flex items-center justify-center px-4 py-1.5 border rounded-sm cursor-pointer hover:bg-gray-200 hover:bg-opacity-50"
-              onClick={() => handleOnClick('forward', {
-                senderEmail: '',
-                senderDisplayName: '',
-                senderUserUid: '',
-                sourceThreadId: ''
-              })}
-            >
-              <MdForward size="20px" color="rgb(87,87,87)" />
-              <span className="ml-2 text-sm tracking-wide text-gray-600">
-                Forward
-              </span>
-            </div>
-          </div>
-        )
-      }
     </div>
   )
 }

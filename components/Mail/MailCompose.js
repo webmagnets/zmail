@@ -115,7 +115,7 @@ const MailCompose = ({
                       value={emailValue}
                       onChange={e => setEmailValue(e.target.value)}
                       onKeyPress={e => handleKeyPress(e)}
-                      placeholder="Recipients"
+                      placeholder={recipients.length > 0 ? '' : 'Recipients'}
                       className="w-full h-full text-sm outline-none"
                     />
                   </div>

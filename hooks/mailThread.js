@@ -92,28 +92,14 @@ export const useMailThreads = (type) => {
       - X Spammed
       - X Blocked
       - X Trashed
-      - X Sent
     */
 
     const inbox = () => {
       return mailThreadsHashMap[currentUser.userUid]
         // Filter threads that belong to inbox category
         .filter((thread) => {
-          return checkMailThreadByCondition([1, 1, 1, 1], currentUser, thread, mailHashMap, INVALID)
+          return checkMailThreadByCondition([1, 1, 1, 0], currentUser, thread, mailHashMap, INVALID)
         })
-        // // Classify threads by read status
-        // .reduce((acc, curThread) => {
-        //   if (curThread.hasUnread) {
-        //     acc['unread'].push(curThread);
-        //   } else {
-        //     acc['read'].push(curThread);
-        //   }
-          
-        //   return acc;
-        // }, {
-        //   read: [],
-        //   unread: []
-        // });
     }
 
     /*
@@ -122,14 +108,13 @@ export const useMailThreads = (type) => {
       - X Spammed
       - X Blocked
       - X Trashed
-      - X Sent
     */
 
     const starred = () =>  {
       return mailThreadsHashMap[currentUser.userUid]
         .filter(thread => {
           return (
-            checkMailThreadByCondition([1, 1, 1, 1], currentUser, thread, mailHashMap, INVALID) &&
+            checkMailThreadByCondition([1, 1, 1, 0], currentUser, thread, mailHashMap, INVALID) &&
             (thread.starredMailUids.length > 0)
           )
         })
@@ -141,14 +126,13 @@ export const useMailThreads = (type) => {
       - X Spammed
       - X Blocked
       - X Trashed
-      - X Sent
     */
 
     const important = () =>  {
       return mailThreadsHashMap[currentUser.userUid]
         .filter(thread => {
           return (
-            checkMailThreadByCondition([1, 1, 1, 1], currentUser, thread, mailHashMap, INVALID) && 
+            checkMailThreadByCondition([1, 1, 1, 0], currentUser, thread, mailHashMap, INVALID) && 
             thread.isImportant
           )
         })

@@ -15,10 +15,12 @@ import { changeMailThread } from '../../reducers/store/mailThread';
 
 const MailThreadListItem = ({
   thread,
+  currentUser,
   onSelectThread
 }) => {
   const dispatch = useDispatch();
   const router = useRouter();
+  const category = router.query.category;
 
   const {
     threadOwnerUid,
@@ -31,6 +33,16 @@ const MailThreadListItem = ({
     isImportant
   } = thread;
   console.log(thread)
+
+  const participantsString = () => {
+    const { senderDetails } = headMail;
+
+    return category === 'sent'
+      ? `To: 
+        ${(senderDetails.email === currentUser.email ? 'Me' : senderDetails.displayName)}
+      `
+      : threadParticipants.join(', ')
+  }
 
   const threadCreatedAt = (secs) => {
     const t = getDateByTime(secs);
@@ -90,7 +102,7 @@ const MailThreadListItem = ({
 
   return (
     <tr
-      className={`flex h-10 py-2 text-sm antialiased font-bold bg-white cursor-pointer hover:shadow-xl ${thread.hasUnread ? 'bg-opacity-90' : 'bg-opacity-70'}`}
+      className={`flex h-10 py-2 text-sm antialiased bg-white cursor-pointer hover:shadow-xl ${thread.hasUnread ? 'bg-opacity-90 font-bold' : 'bg-opacity-70'}`}
     >
       <td className="flex items-center pl-2">
         <IconButton
@@ -162,15 +174,17 @@ const MailThreadListItem = ({
         onClick={() => onClickMailThread(threadId)}
       >
         <div className="truncate">
-          {threadParticipants.join(', ')}
+          {participantsString()}
         </div>
         {
-          <span className="ml-1 text-xs antialiased text-gray-500">
-            {
-              (threadParticipants.length > 1 && Object.keys(linkedMailUids).length > 1) &&
-              threadParticipants.length
-            }
-          </span>
+          category !== 'sent' && (
+            <span className="ml-1 text-xs antialiased text-gray-500">
+              {
+                (threadParticipants.length > 1 && Object.keys(linkedMailUids).length > 1) &&
+                threadParticipants.length
+              }
+            </span>
+          )
         }
       </td>
       <td

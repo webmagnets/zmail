@@ -27,7 +27,21 @@ const MailThread = () => {
     starredMailUids: []
   });
 
+  const [expandedMailUids, setExpandedMailUids] = useState([]);
+
   console.log(mailThread);
+
+  const handleAddExpandedMailUids = (targetMailUid) => {
+    const cp =  [...expandedMailUids];
+    cp.push(targetMailUid);
+    setExpandedMailUids(cp);
+  }
+
+  const handleRemoveExpandedMailUids = (targetMailUid) => {
+    setExpandedMailUids(
+      [...expandedMailUids].filter(uid => uid !== targetMailUid)
+    );
+  }
 
   const onClickImporant = (status) => {
     dispatch(changeMailThread(
@@ -96,14 +110,22 @@ const MailThread = () => {
       const updatedMailThreadsHashMap = { ...mailThreadsHashMap };
 
       for (let i = 0; i < validUids.length; i++) {
+        // Skip if user's uid is in recipients list
+        // - This is because we have already put that message in user's thread above
+        if (validUids[i] === currentUser.userUid) {
+          continue;
+        }
+
         // 2-1. Source Thread Id
-        if (validUids[i].userUid === senderUserUid) {
+        if (validUids[i] === senderUserUid) {
+          console.log('Source Thread Owner', validUids[i]);
           const senderThreads = mailThreadsHashMap[senderUserUid];
           const index = senderThreads.findIndex(el => el.threadId === sourceThreadId);
           updateMailThreadWithNewMail(senderThreads[index], newMail, validUids[i]);
 
         // 2-2. X Source Thread Id
         } else {
+          console.log('New Thread', validUids[i]);
           // A. Create New Thread with New Mail as head
           const newThread = getNewThread(
             validUids[i],
@@ -111,12 +133,11 @@ const MailThread = () => {
             mailThread.title,
             newMail.mailUid
           )
-          console.log(validUids[i].userUid);
+          console.log(validUids[i]);
           console.log(updatedMailThreadsHashMap[validUids[i]]);
           updatedMailThreadsHashMap[validUids[i]].push(newThread);
         }
       }
-
       dispatch(setMailThreads(updatedMailThreadsHashMap));
     } else {
       alert('There is an invalid email in Recipients. Please type in only the emails that are available for this project.')
@@ -186,9 +207,9 @@ const MailThread = () => {
       </Head>
 
       <MailLayout category={category}>
-        <div className="flex flex-col pr-4 bg-white">
+        <div className="flex flex-col pr-4 overflow-y-scroll bg-white">
           {/* Title Row */}
-          <div className="flex items-center justify-between pt-5 pb-2 pl-20">
+          <div className="flex items-center justify-between pt-5 pb-2 pl-16">
             <div className="flex items-center">
               <h3 className="text-2xl font-normal">
                 {mailThread.threadTitle || ''}
@@ -236,6 +257,9 @@ const MailThread = () => {
           {/* Mail List */}
           <MailList
             mailList={mailThread.mailList}
+            expandedMailUids={expandedMailUids}
+            onAddExpandedMailUids={handleAddExpandedMailUids}
+            onRemoveExpandedMailUids={handleRemoveExpandedMailUids}
             currentUser={currentUser}
             starredMailUids={mailThread.starredMailUids}
             handleOnSendEmail={handleOnSendEmail}
