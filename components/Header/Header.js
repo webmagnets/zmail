@@ -1,15 +1,20 @@
 import Image from 'next/image';
+import { useState } from 'react';
 import { MdSearch, MdTune, MdMenu } from 'react-icons/md';
 import { useSelector } from 'react-redux';
 import IconButton from '../Button/IconButton';
+import UserProfile from '../Profile/UserProfile';
 
 export default function Header() {
   const {
-    userUid,
-    photoUrl,
-    email,
-    displayName
+    photoUrl = '',
   } = useSelector(state => state.user.currentUser);
+
+  const [isUserProfileOpen, setIsUserProfileOpen] = useState(false);
+
+  const profilePhoto = photoUrl === ''
+    ? 'https://gravatar.com/avatar/762cbbab74ca0b222c1aaed8948be973?s=400&d=identicon&r=x'
+    : photoUrl
 
   return (
     <div className="flex w-full p-2 border-b border-opacity-20">
@@ -64,22 +69,26 @@ export default function Header() {
       </div>
 
       {/* Left Section */}
-      <div className="flex items-center justify-end pl-6 pr-2">
+      <div className="relative flex items-center justify-end pl-6 pr-2">
         <IconButton
           size="medium"
           label="Profile"
           tooltipLocation="none"
           imgComponent={
             <Image
-              src={photoUrl}
+              src={profilePhoto}
               alt="Profile Picture"
               width="32px"
               height="32px"
               className="z-10 flex items-center justify-center rounded-full"
             />
           }
-          onClickHandler={() => {}}
+          onClickHandler={() => setIsUserProfileOpen(true)}
         />
+        {
+          isUserProfileOpen &&
+          <UserProfile onCloseUserProfile={() => setIsUserProfileOpen(false)}/>
+        }
       </div>
     </div>
   )

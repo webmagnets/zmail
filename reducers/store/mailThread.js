@@ -133,6 +133,7 @@ const mailThread = (state = initialState, action) => {
     case ACTION_ON_SELECTED_MAIL_THREADS: {
       let updatedSelectedThreads;
       let changedKey;
+
       console.log(action.payload);
 
       switch (action.payload) {

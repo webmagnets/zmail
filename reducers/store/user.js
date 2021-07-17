@@ -1,6 +1,7 @@
 export const SET_CURRENT_USER = 'SET_CURRENT_USER'
 export const USER_LOGOUT = "USER_LOGOUT"
 export const SET_INITIAL_USERS = 'SET_INITIAL_USERS'
+export const ADD_SPAM_USER = 'ADD_SPAM_USER'
 
 
 export const userLogOut = () => ({
@@ -15,6 +16,11 @@ export const setCurrentUser = (user) => ({
 export const setInitialUsers = (users) => ({
   type: SET_INITIAL_USERS,
   payload: users
+})
+
+export const addUsersToSpam = (userUids) => ({
+  type: ADD_SPAM_USER,
+  payload: userUids
 })
 
 const initialState = {
@@ -43,6 +49,31 @@ const user = (state = initialState, action) => {
       return {
         ...state,
         userHashMap: action.payload
+      }
+    }
+
+    case ADD_SPAM_USER: {
+      const updatedSpammedUserUids = [...state.currentUser.spammedUserUids];
+      
+      action.payload.forEach(uid => {
+        if (!(uid in updatedSpammedUserUids)) {
+          updatedSpammedUserUids.push(uid);
+        }
+      })
+
+      return {
+        ...state,
+        userHashMap: {
+          ...state.userHashMap,
+          [state.currentUser.userUid]: {
+            ...state.userHashMap[state.currentUser.userUid],
+            spammedUserUids: updatedSpammedUserUids
+          }
+        },
+        currentUser: {
+          ...state.currentUser,
+          spammedUserUids: updatedSpammedUserUids
+        }
       }
     }
 

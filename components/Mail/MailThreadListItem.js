@@ -126,7 +126,7 @@ const MailThreadListItem = ({
 
   return (
     <tr
-      className={`flex h-10 py-2 text-sm antialiased bg-white cursor-pointer hover:shadow-2xl ${isOpaque ? 'bg-opacity-70 ' : 'bg-opacity-90 font-bold'}`}
+      className={`flex h-11 py-2 text-sm antialiased bg-white cursor-pointer hover:shadow-2xl ${isOpaque ? 'bg-opacity-70 ' : 'bg-opacity-90 font-bold'}`}
     >
       <td className="flex items-center pl-2">
         <IconButton

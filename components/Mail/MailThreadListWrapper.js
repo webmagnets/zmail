@@ -47,7 +47,7 @@ const MailThreadListWrapper = ({
   }
 
   return (
-    <div className="overflow-y-auto">
+    <div className="overflow-y-auto min-h-list">
       {
         category === 'inbox'
         ? (

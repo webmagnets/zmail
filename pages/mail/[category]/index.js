@@ -22,7 +22,7 @@ const MailThreads = () => {
   const router = useRouter();
 
   useEffect(() => {
-    if (currentUser.uid === '') {
+    if (currentUser.userUid === '') {
       alert('Please select a user in the landing page to proceed to Mail Page.')
       router.push('/')
     }

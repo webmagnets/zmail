@@ -99,6 +99,10 @@ export const useMailThreads = (type) => {
       - X Trashed
     */
 
+    if (currentUser.userUid === '') {
+      return;
+    }
+
     const inbox = () => {
       return mailThreadsHashMap[currentUser.userUid]
         // Filter threads that belong to inbox category

@@ -12,7 +12,8 @@ import {
 import { setMails } from '../reducers/store/mail';
 import {
   setCurrentUser,
-  setInitialUsers
+  setInitialUsers,
+  userLogOut
 } from '../reducers/store/user';
 import {
   setCurrentMailThreads,
@@ -26,6 +27,9 @@ const Home = () => {
   const mailHashMap = useSelector(({ mail }) => mail.mailHashMap);
   const mailThreadsHashMap = useSelector(({ mailThread }) => mailThread.mailThreadsHashMap)
 
+  useEffect(() => {
+    dispatch(userLogOut());
+  }, []);
 
   useEffect(() => {
     if (Object.keys(userHashMap).length === 0) {

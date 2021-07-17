@@ -27,6 +27,13 @@ const MailThread = () => {
     starredMailUids: []
   });
 
+  useEffect(() => {
+    if (currentUser.uid === '') {
+      alert('Please select a user in the landing page to proceed to Mail Page.')
+      router.push('/')
+    }
+  }, [currentUser])
+
   const [expandedMailUids, setExpandedMailUids] = useState([]);
   const hasExpandedAll = expandedMailUids.length >= mailThread.mailList.length - 1
 

@@ -17,6 +17,9 @@ module.exports = {
         '168': '168px',
         '248': '248px'
        },
+       minHeight: {
+        'list': 'calc(100vh - 117px)'
+       },
        backgroundImage: theme => ({
          'inbox': "url('/inbox.png')",
          'starred': "url('/starred.png')",
