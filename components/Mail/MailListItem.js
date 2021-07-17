@@ -136,6 +136,7 @@ const MailListItem = ({
                         imgComponent={
                           <MdMoreVert size="20px" color="rgb(87,87,87)" />
                         }
+                        onClickHandler={() => {}}
                       />
                     </div>
                   </td>

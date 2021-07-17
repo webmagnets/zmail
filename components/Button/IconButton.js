@@ -129,6 +129,34 @@ const IconButton = ({
             </p>
           </div>
         }
+        {
+          tooltipLocation === 'top' &&
+          <div
+            className={`
+              absolute
+              w-max
+              p-2
+              bg-black
+              rounded-md
+              transform
+              left-1/2
+              -translate-x-1/2
+              bottom-full
+              bg-opacity-60
+              hidden
+              group-hover:block
+            `}
+          >
+            <p className={`
+              text-xs
+              text-white
+              m-0
+              p-0
+            `}>
+              {label}
+            </p>
+          </div>
+        }
       </div>
     </div>
   );

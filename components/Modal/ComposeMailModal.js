@@ -209,8 +209,8 @@ const ComposeMailModal = ({
         <div>
           <IconButton
             size="small"
-            label="Discard Draft"
-            tooltipLocation="bottom"
+            label="Discard"
+            tooltipLocation="top"
             imgComponent={
               <MdDelete size="20px" color="rgb(87, 87, 87)" />
             }

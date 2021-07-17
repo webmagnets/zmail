@@ -36,22 +36,22 @@ const Dropdown = ({
     }
   }, [dropdownRef, onCloseDropdown])
 
-  const handleOnClickItem = () => {
-    onClickHandler()
+  const handleOnClick = (handler) => {
+    handler();
     onCloseDropdown();
   }
 
   return (
     <div
       ref={dropdownRef}
-      className="absolute left-0 py-2 bg-white rounded-md shadow-lg drop-shadow min-w-168 top-full"
+      className="absolute left-0 z-20 py-2 bg-white rounded-md shadow-lg drop-shadow min-w-168 top-full"
     >
       {
         data.map((d, i) => {
           return (
             <div
               key={i}
-              onClick={() => handleOnClickItem()}
+              onClick={() => handleOnClick(d.onClickHandler)}
               className="flex px-4 py-2 transition hover:bg-gray-100"
             >
               {

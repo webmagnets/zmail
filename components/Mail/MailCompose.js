@@ -44,12 +44,16 @@ const MailCompose = ({
     {
       label: 'Reply',
       iconComponent: (<MdReply size="20px" color="rgb(87, 87, 87)" />),
-      onClickHandler: () => onClickChangeComposeType('reply')
+      onClickHandler: () => {
+        onClickChangeComposeType('reply')
+      }
     },
     {
       label: 'Forward',
       iconComponent: (<MdForward size="20px" color="rgb(87, 87, 87)" />),
-      onClickHandler: () => onClickChangeComposeType('forward')
+      onClickHandler: () => {
+        onClickChangeComposeType('forward')
+      }
     },
   ]
 
@@ -113,10 +117,11 @@ const MailCompose = ({
       <div className="flex flex-col flex-auto w-full mb-5">
         <div className="min-h-full transition-shadow border rounded-md hover:shadow-lg">
           <div className="flex px-4 py-1.5">
-            <div
-              className={`relative flex items-center p-2 -ml-2 transition-all rounded-md cursor-pointer hover:bg-gray-500 hover:bg-opacity-10 ${isComposeTypeDropdownOpen && 'bg-gray-500 bg-opacity-10'}`}
-              onClick={() => setIsComposeTypeDropdownOpen(true)}
-            >
+            <div className={`relative flex items-center p-2 -ml-2 transition-all rounded-md cursor-pointer hover:bg-gray-500 hover:bg-opacity-10 ${isComposeTypeDropdownOpen && 'bg-gray-500 bg-opacity-10'}`}>
+              <div
+                className="flex items-center"
+                onClick={() => setIsComposeTypeDropdownOpen(true)}
+              >
               {
                 composeType === 'reply' ? (
                   <MdReply size="20px" color="rgb(87, 87, 87)" />
@@ -126,6 +131,7 @@ const MailCompose = ({
                 )
               }
               <MdArrowDropDown size="20px" color="rgb(87, 87, 87)" />
+              </div>
               {
                 isComposeTypeDropdownOpen &&
                 <Dropdown

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   MdRefresh,
   MdMoreVert,
@@ -14,12 +15,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import useCategory from '../../hooks/category';
 import { deleteSelectedMailThreads, recoverSelectedMailThreads, setReadSectionStatus, setSelectedMailThreads, setUnreadSectionStatus } from '../../reducers/store/mailThread';
 import IconButton from '../Button/IconButton';
+import Dropdown from '../Dropdown/Dropdown';
 
 const MailThreadListAction = () => {
   const dispatch = useDispatch();
   const category = useCategory();
   const curMailThreads = useSelector(({ mailThread }) => mailThread.curMailThreads);
   const selectedMailThreads = useSelector(({ mailThread }) => mailThread.selectedMailThreads);
+
+  const [isSelectDropdownOpen, setIsSelectDropdownOpen] = useState(false);
   
   const handleOnClickCheckbox = () => {
     if (curMailThreads.length === selectedMailThreads.length) {
@@ -44,6 +48,55 @@ const MailThreadListAction = () => {
     }
   }
 
+  const dropdownData = [
+    {
+      label: 'All',
+      onClickHandler: () => {
+        dispatch(setSelectedMailThreads([
+          ...curMailThreads
+        ]))
+      }
+    },
+    {
+      label: 'None',
+      onClickHandler: () => {
+        dispatch(setSelectedMailThreads([]))
+      }
+    },
+    {
+      label: 'Read',
+      onClickHandler: () => {
+        dispatch(setSelectedMailThreads(
+          curMailThreads.filter(thread => !thread.hasUnread)
+        ))
+      }
+    },
+    {
+      label: 'Unread',
+      onClickHandler: () => {
+        dispatch(setSelectedMailThreads(
+          curMailThreads.filter(thread => thread.hasUnread)
+        ))
+      }
+    },
+    {
+      label: 'Starred',
+      onClickHandler: () => {
+        dispatch(setSelectedMailThreads(
+          curMailThreads.filter(thread => thread.starredMailUids.length > 0)
+        ))
+      }
+    },
+    {
+      label: 'Unstarred',
+      onClickHandler: () => {
+        dispatch(setSelectedMailThreads(
+          curMailThreads.filter(thread => thread.starredMailUids.length === 0)
+        ))
+      }
+    }
+  ]
+
   const handleOnDelete = () => {
     dispatch(deleteSelectedMailThreads());
   }
@@ -60,16 +113,23 @@ const MailThreadListAction = () => {
 
   return (
     <div className="flex items-center justify-start h-12 border-b border-opacity-20">
-      <div className="flex items-center mr-2">
+      <div className="relative flex items-center mr-2">
         <div
           className="px-1 py-2 transition rounded-md cursor-pointer hover:bg-gray-100 hover:bg-opacity-10"
           onClick={() => handleOnClickCheckbox()}
         >
           {checkbox()}
         </div>
-        <div className="-ml-1.5 py-2 transition rounded-md cursor-pointer hover:bg-gray-100 hover:bg-opacity-10">
+        <div
+          className="-ml-1.5 py-2 transition rounded-md cursor-pointer hover:bg-gray-100 hover:bg-opacity-10"
+          onClick={() => setIsSelectDropdownOpen(true)}
+        >
           <MdArrowDropDown size="20px" color="white" />
         </div>
+        {
+          isSelectDropdownOpen &&
+          <Dropdown data={dropdownData} onCloseDropdown={() => setIsSelectDropdownOpen(false)}/>
+        }
       </div>
       <div className={`
         flex

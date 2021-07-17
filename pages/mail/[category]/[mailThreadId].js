@@ -236,7 +236,9 @@ const MailThread = () => {
       </Head>
 
       <MailLayout category={category}>
-        <MailListAction />
+        <MailListAction
+          mailThread={mailThread}
+        />
         <div className="flex flex-col pr-4 bg-white">
           {/* Title Row */}
           <div className="flex items-center justify-between pt-5 pb-2 pl-16">
