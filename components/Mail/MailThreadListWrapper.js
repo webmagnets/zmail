@@ -1,18 +1,20 @@
 import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { setReadSectionStatus, setUnreadSectionStatus } from '../../reducers/store/mailThread';
 import MailThreadList from './MailThreadList';
 import MailThreadListSection from './MailThreadListSection';
 
 const MailThreadListWrapper = ({
   category,
-  curMailThreads,
-  onSelectThread
+  curMailThreads
 }) => {
   // For Inbox
-  const [inboxReadThreads, setInboxReadThreads] = useState([])
   const [inboxUnreadThreads, setInboxUnreadThreads] = useState([]);
+  const [inboxReadThreads, setInboxReadThreads] = useState([]);
 
-  const [isReadOpen, setIsReadOpen] = useState(true);
-  const [isUnreadOpen, setIsUnreadOpen] = useState(true);
+  const dispatch = useDispatch();
+  const isReadSectionOpen = useSelector(({ mailThread }) => mailThread.isReadSectionOpen);
+  const isUnreadSectionOpen = useSelector(({ mailThread }) => mailThread.isUnreadSectionOpen);
 
   useEffect(() => {
     if (category === 'inbox') {
@@ -34,9 +36,13 @@ const MailThreadListWrapper = ({
 
   const onClickSection = (type) => {
     if (type === 'read') {
-      setIsReadOpen(prev => !prev);
+      dispatch(setReadSectionStatus(
+        !isReadSectionOpen
+      ))
     } else if (type === 'unread') {
-      setIsUnreadOpen(prev => !prev);
+      dispatch(setUnreadSectionStatus(
+        !isUnreadSectionOpen
+      ))
     }
   }
 
@@ -49,27 +55,25 @@ const MailThreadListWrapper = ({
             <MailThreadListSection
               label="Unread"
               type="unread"
-              isOpen={isUnreadOpen}
+              isOpen={isUnreadSectionOpen}
               onClickHandler={onClickSection}
             />
             {
-              isUnreadOpen &&
+              isUnreadSectionOpen &&
               <MailThreadList
                 threads={inboxUnreadThreads}
-                onSelectThread={onSelectThread}
               />
             }
             <MailThreadListSection
               label="Everything else"
               type="read"
-              isOpen={isReadOpen}
+              isOpen={isReadSectionOpen}
               onClickHandler={onClickSection}
             />
             {
-              isReadOpen &&
+              isReadSectionOpen &&
               <MailThreadList
                 threads={inboxReadThreads}
-                onSelectThread={onSelectThread}
               /> 
             }
           </>
@@ -77,7 +81,6 @@ const MailThreadListWrapper = ({
         : (
           <MailThreadList
             threads={curMailThreads}
-            onSelectThread={onSelectThread}
           />
         )
       }

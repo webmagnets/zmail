@@ -7,55 +7,64 @@ const MailThreadListContainer = ({ category }) => {
   // Base Redux Current Mail Thread State
   const curMailThreads = useSelector(({ mailThread }) => mailThread.curMailThreads);
 
-  const [selectedThreads, setSelectedThreads] = useState([]);
+  // const [threadsWithSelectOption, setThreadsWithSelectOption] = useState([]);
 
-  useEffect(() => {
-    setSelectedThreads(curMailThreads.filter((thread) => thread.isSelected))
-  }, [curMailThreads])
+  // console.log("Container")
 
-  const handleSelectAll = () => {
-    const cp = [...curMailThreads];
+  // useEffect(() => {
+  //   console.log("Setup with threads")
 
-    // Select All Threads
-    setThreadsWithSelectOption(
-      cp.map(thread => {
-        return {
-          ...thread,
-          isSelected: true
-        }
-      })
-    )
+  //   const updatedThreads = curMailThreads.map(thread => {
+  //     return {
+  //       ...thread,
+  //       isSelected: false
+  //     }
+  //   })
+
+  //   setThreadsWithSelectOption(updatedThreads);
+  // }, [curMailThreads])
+
+  // const handleSelectAll = () => {
+  //   console.log("On Select All Threads");
+  //   const cp = [...curMailThreads];
+
+  //   // Select All Threads
+  //   setThreadsWithSelectOption(
+  //     cp.map(thread => {
+  //       return {
+  //         ...thread,
+  //         isSelected: true
+  //       }
+  //     })
+  //   )
+  // }
+
+  // const onSelectThread = (thread, status) => {
+  //   const cp = [...threadsWithSelectOption];
+  //   const index = cp.findIndex(el => el.threadId === thread.threadId);
+
+  //   console.log("On Select Thread: ", thread);
+  //   console.log("Original Threads: ", cp);
     
-    if (!hasSelectedOption) {
-      setHasSelectedOption(true);
-    }
-  }
+  //   cp[index] = {
+  //     ...cp[index],
+  //     isSelected: status
+  //   }
 
-  const onSelectThread = (thread) => {
-    const cp = [...curMailThreads];
-    const index = cp.findIndex(el => el.threadId === thread.threadId);
-
-    cp[index] = {
-      ...cp[index],
-      isSelected: !cp[index].isSelected
-    }
-
-    setThreadsWithSelectOption(cp);
-  }
+  //   setThreadsWithSelectOption(cp);
+  // }
 
   return (
     <div className="flex flex-col">
       <MailThreadListAction
-        selectedThreads={selectedThreads}
-        handleSelectAll={handleSelectAll}
+        curMailThreads={curMailThreads}
       />
       <MailThreadListWrapper
         category={category}
         curMailThreads={curMailThreads}
-        onSelectThread={onSelectThread}
       />
     </div>
   )
 }
 
-export default MailThreadListContainer;
+export default MailThreadListContainer

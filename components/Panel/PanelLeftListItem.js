@@ -9,9 +9,13 @@ import {
   MdInsertDriveFile,
   MdInbox
 } from 'react-icons/md';
+import { useDispatch } from 'react-redux';
+import { setCurrentMailThreads, setSelectedMailThreads } from '../../reducers/store/mailThread';
 
 const PanelLeftListItem = ({ item, isActive }) => {
   const router = useRouter();
+  const dispatch = useDispatch();
+
   const iconComponentLookup = {
     'inbox': (<MdInbox size="20px" color="white" />),
     'starred': (<MdStar size="20px" color="white" />),
@@ -22,7 +26,11 @@ const PanelLeftListItem = ({ item, isActive }) => {
     'trash': (<MdDelete size="20px" color="white" />),
   }
 
-  const navigateTo = (category) => router.push(`/mail/${category}`, undefined, { shallow: true });
+  const navigateTo = (category) => {
+    router.push(`/mail/${category}`);
+    dispatch(setSelectedMailThreads([]));
+    dispatch(setCurrentMailThreads([]));
+  }
 
   return (
     <div

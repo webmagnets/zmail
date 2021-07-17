@@ -1,6 +1,12 @@
 export const SET_MAIL_THREADS = 'SET_MAIL_THREADS';
 export const SET_CURRENT_MAIL_THREADS = 'SET_CURRENT_MAIL_THREADS';
 export const CHANGE_MAIL_THREAD = 'CHANGE_MAIL_THREAD';
+export const SET_SELECTED_MAIL_THREADS = 'SET_SELECTED_MAIL_THREADS'
+
+export const SET_READ_SECTION_OPEN_STATUS = 'SET_READ_SECTION_OPEN_STATUS'
+export const SET_UNREAD_SECTION_OPEN_STATUS = 'SET_UNREAD_SECTION_OPEN_STATUS'
+
+export const DELETE_SELECTED_MAIL_THREADS = 'DELETE_SELECTED_MAIL_THREADS'
 
 export const setMailThreads = (mailThreads) => ({
   type: SET_MAIL_THREADS,
@@ -9,7 +15,12 @@ export const setMailThreads = (mailThreads) => ({
 
 export const setCurrentMailThreads = (curMailThreads) => ({
   type: SET_CURRENT_MAIL_THREADS,
-  payload: curMailThreads,
+  payload: curMailThreads
+})
+
+export const setSelectedMailThreads = (selectedMailThreads) => ({
+  type: SET_SELECTED_MAIL_THREADS,
+  payload: selectedMailThreads
 })
 
 export const addMailThreads = (mailThreads) => ({
@@ -26,9 +37,27 @@ export const changeMailThread = (userUid, threadId, changes) => ({
   }
 })
 
+export const setReadSectionStatus = (status) => ({
+  type: SET_READ_SECTION_OPEN_STATUS,
+  payload: status
+})
+
+export const setUnreadSectionStatus = (status) => ({
+  type: SET_UNREAD_SECTION_OPEN_STATUS,
+  payload: status
+})
+
+export const deleteSelectedMailThreads = () => ({
+  type: DELETE_SELECTED_MAIL_THREADS
+})
+
 const initialState = {
   mailThreadsHashMap: {},
-  curMailThreads: []
+  curMailThreads: [],
+  selectedMailThreads: [],
+  // Section State
+  isReadSectionOpen: true,
+  isUnreadSectionOpen: true
 }
 
 const mailThread = (state = initialState, action) => {
@@ -65,11 +94,65 @@ const mailThread = (state = initialState, action) => {
       }
 
       return {
+        ...state,
         mailThreadsHashMap: {
           ...state.mailThreadsHashMap,
           [action.payload.userUid]: updatedMailThreadsHashMap
         },
         curMailThreads: updatedMailThreads
+      }
+    }
+
+    case SET_SELECTED_MAIL_THREADS: {
+      return {
+        ...state,
+        selectedMailThreads: action.payload
+      }
+    }
+
+    case SET_READ_SECTION_OPEN_STATUS: {
+      return {
+        ...state,
+        isReadSectionOpen: action.payload
+      }
+    }
+
+    case SET_UNREAD_SECTION_OPEN_STATUS: {
+      return {
+        ...state,
+        isUnreadSectionOpen: action.payload
+      }
+    }
+
+    case DELETE_SELECTED_MAIL_THREADS: {
+      const updatedSelectedThreads = [...state.selectedMailThreads]
+        .map((thread) => {
+          const mailUidsWithoutHead = Object.keys(thread.linkedMailUids).filter(uid => uid !== thread.headMailUid);
+          return {
+            ...thread,
+            deletedMailUids: [thread.headMailUid, ...mailUidsWithoutHead]
+          }
+        })
+      
+      const userUid = state.curMailThreads[0].threadOwnerUid;
+      const updatedMailThreads = [...state.curMailThreads];
+      const updatedMailThreadsHashMap = { ...state.mailThreadsHashMap }[userUid];
+
+      for (let i = 0; i < updatedSelectedThreads.length; i++) {
+        const threadIndex = updatedMailThreads.findIndex(el => el.threadId === updatedSelectedThreads[i].threadId);
+        const hashMapThreadIndex = updatedMailThreadsHashMap.findIndex(el => el.threadId === updatedSelectedThreads[i].threadId);
+        updatedMailThreads[threadIndex] = {...updatedSelectedThreads[i]}
+        updatedMailThreadsHashMap[hashMapThreadIndex] = {...updatedSelectedThreads[i]}
+      }
+
+      return {
+        ...state,
+        mailThreadsHashMap: {
+          ...state.mailThreadsHashMap,
+          [userUid]: updatedMailThreadsHashMap
+        },
+        curMailThreads: updatedMailThreads,
+        selectedMailThreads: []
       }
     }
 

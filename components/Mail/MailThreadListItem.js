@@ -6,21 +6,23 @@ import {
   MdCheckBox,
   MdCheckBoxOutlineBlank,
 } from 'react-icons/md'
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { getDateByTime } from '../../lib/utils'
 import IconButton from '../Button/IconButton'
 import { useRouter } from 'next/router';
-import { useDispatch } from 'react-redux';
-import { changeMailThread } from '../../reducers/store/mailThread';
+import { useDispatch, useSelector } from 'react-redux';
+import { changeMailThread, setSelectedMailThreads } from '../../reducers/store/mailThread';
 
 const MailThreadListItem = ({
-  thread,
-  currentUser,
-  onSelectThread
+  thread
 }) => {
   const dispatch = useDispatch();
   const router = useRouter();
   const category = router.query.category;
+  const currentUser = useSelector(({ user }) => user.currentUser);
+  const selectedMailThreads = useSelector(({ mailThread }) => mailThread.selectedMailThreads);
+
+  const [isSelected, setIsSelected] = useState(false);
 
   const {
     threadOwnerUid,
@@ -32,7 +34,14 @@ const MailThreadListItem = ({
     starredMailUids,
     isImportant
   } = thread;
-  console.log(thread)
+
+  useEffect(() => {
+    if (selectedMailThreads) {
+      setIsSelected(
+        selectedMailThreads.findIndex(el => el.threadId === threadId) > -1
+      )
+    }
+  }, [selectedMailThreads, threadId])
 
   const participantsString = () => {
     const { senderDetails } = headMail;
@@ -57,6 +66,19 @@ const MailThreadListItem = ({
       return t.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
     } else {
       return tDateString
+    }
+  }
+
+  const onSelectThread = () => {
+    const cp = [...selectedMailThreads];
+
+    if (isSelected) {
+      dispatch(setSelectedMailThreads(
+        cp.filter(el => el.threadId !== threadId)
+      ))
+    } else {
+      cp.push(thread);
+      dispatch(setSelectedMailThreads(cp));
     }
   }
 
@@ -100,46 +122,39 @@ const MailThreadListItem = ({
     ))
   }
 
+  const isOpaque = category === 'sent' ? true : !thread.hasUnread;
+
   return (
     <tr
-      className={`flex h-10 py-2 text-sm antialiased bg-white cursor-pointer hover:shadow-xl ${thread.hasUnread ? 'bg-opacity-90 font-bold' : 'bg-opacity-70'}`}
+      className={`flex h-10 py-2 text-sm antialiased bg-white cursor-pointer hover:shadow-2xl ${isOpaque ? 'bg-opacity-70 ' : 'bg-opacity-90 font-bold'}`}
     >
       <td className="flex items-center pl-2">
         <IconButton
           size="xs"
-          label="Select"
-          tooltipLocation="bottom"
           imgComponent={
-            <MdCheckBoxOutlineBlank size="20px" color="gray"/>
+            isSelected
+              ? <MdCheckBox size="20px" color="gray" />
+              : <MdCheckBoxOutlineBlank size="20px" color="gray"/>
           }
-          onClickHandler={() => {}}
+          onClickHandler={() => onSelectThread()}
         />
       </td>
       <td className="flex items-center">
-        {
-          starredMailUids.length > 0 ? (
-            <IconButton
-              size="xs"
-              label="Unset Star"
-              tooltipLocation="bottom"
-              imgComponent={
-                <MdStar size="20px" color="#F4C86A" />
-              }
-              onClickHandler={onClickStar}
-            />
-          )
-          : (
-            <IconButton
-              size="xs"
-              label="Set Star"
-              tooltipLocation="bottom"
-              imgComponent={
-                <MdStarBorder size="20px" color="gray" />
-              }
-              onClickHandler={onClickStar}
-            />
-          )
-        }
+        <IconButton
+          size="xs"
+          label={
+            starredMailUids.length > 0
+              ? 'Unset Star'
+              : 'Set Star'
+          }
+          tooltipLocation="bottom"
+          imgComponent={
+            starredMailUids.length > 0
+              ? <MdStar size="20px" color="#F4C86A" />
+              : <MdStarBorder size="20px" color="gray" />
+          }
+          onClickHandler={onClickStar}
+        />
       </td>
       <td className="flex items-center">
         <div className="flex items-center justify-center pr-3">
@@ -211,10 +226,9 @@ const areEqual = (prevProps, nextProps) => {
   return prevProps.thread.threadId === nextProps.thread.threadId &&
     prevProps.thread.headMail.mailUid === nextProps.thread.headMail.mailUid &&
     prevProps.thread.starredMailUids.length === nextProps.thread.starredMailUids.length &&
-    prevProps.thread.hasUnread === nextProps.thread.hasUnread &&
     prevProps.thread.deletedMailUids.length === nextProps.thread.deletedMailUids.length &&
-    prevProps.thread.isImportant === nextProps.thread.isImportant &&
-    prevProps.thread.isSelected === nextProps.thread.isSelected
+    prevProps.thread.hasUnread === nextProps.thread.hasUnread &&
+    prevProps.thread.isImportant === nextProps.thread.isImportant
 
 }
 

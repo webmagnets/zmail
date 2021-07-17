@@ -165,15 +165,16 @@ const MailThread = () => {
     } = thread;
 
     const mailList = [];
-    console.log(thread);
+    console.log(thread, forTrash);
 
     // Set initial node uid with head mail uid
     let curNodeUid = headMailUid;
 
     while (curNodeUid !== null) {
+      const isDeleted = deletedMailUids.findIndex(uid => uid === curNodeUid) > -1;
       const traverseCondition = forTrash
-        ? (curNodeUid in deletedMailUids)
-        : !(curNodeUid in deletedMailUids);
+        ? isDeleted
+        : !isDeleted
 
       if (traverseCondition) {
         const curNode = getMailWithUserInfo(curNodeUid, mailHashMap, userHashMap);

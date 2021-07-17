@@ -58,7 +58,6 @@ const IconButton = ({
         className={`
           absolute
           rounded-full
-          bg-black
           top-1/2
           left-1/2
           transform
@@ -67,7 +66,7 @@ const IconButton = ({
           transition-all
           ease-in-out
           duration-300
-          bg-opacity-0
+          hover:bg-gray-100
           group-hover:bg-opacity-10
           z-10
           ${inkSizeLookup[size].height}

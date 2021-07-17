@@ -29,6 +29,7 @@ const MailThreads = () => {
   }, [currentUser])
 
   useEffect(() => {
+    console.log("Set MailThreads in Base Page")
     dispatch(setCurrentMailThreads(mailThreads));
   }, [mailThreads, dispatch])
 
