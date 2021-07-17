@@ -44,12 +44,20 @@ const MailThreadListItem = ({
   }, [selectedMailThreads, threadId])
 
   const participantsString = () => {
-    const { senderDetails } = headMail;
+    const { receiverDetails } = headMail;
+    const receiverString = receiverDetails.reduce((acc, cur) => {
+      console.log(cur);
+      const connector = acc === '' ? 'To: ' : ', ';
+
+      if (cur.email === currentUser.email) {
+        return acc += (connector + 'Me')
+      } else {
+        return acc += (connector + cur.displayName)
+      }
+    }, '')
 
     return category === 'sent'
-      ? `To: 
-        ${(senderDetails.email === currentUser.email ? 'Me' : senderDetails.displayName)}
-      `
+      ? receiverString
       : threadParticipants.join(', ')
   }
 
@@ -206,8 +214,11 @@ const MailThreadListItem = ({
         className="flex items-center flex-auto min-w-0"
         onClick={() => onClickMailThread(threadId)}
       >
-        <div className="truncate">
+        <div className="max-w-sm w-max whitespace-nowrap overflow-ellipsis">
           {threadTitle}
+        </div>
+        <div className="ml-1.5 truncate text-gray-500">
+          {`- ${headMail.content}`}
         </div>
       </td>
       <td

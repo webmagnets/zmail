@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { MdSearch, MdTune, MdMenu } from 'react-icons/md';
 import { useSelector } from 'react-redux';
@@ -10,6 +11,7 @@ export default function Header() {
     photoUrl = '',
   } = useSelector(state => state.user.currentUser);
 
+  const router = useRouter();
   const [isUserProfileOpen, setIsUserProfileOpen] = useState(false);
 
   const profilePhoto = photoUrl === ''
@@ -31,7 +33,10 @@ export default function Header() {
             onClickHandler={() => {}}
           />
         </div>
-        <div className="flex items-center justify-center">
+        <div
+          className="flex items-center justify-center cursor-pointer"
+          onClick={() => router.push('/mail/inbox')}
+        >
           <Image src="/mailIcon.png" height="25px" width="32px" alt="mail-icon"/>
           <p className="ml-4">Zmail</p>
         </div>

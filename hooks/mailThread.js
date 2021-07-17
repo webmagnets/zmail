@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { getMailWithUserInfo } from  '../lib/utils';
-import { setCurrentMailThreads } from '../reducers/store/mailThread';
 
 // Constants For Condition Return Value
 const VALID = true;
@@ -30,24 +29,28 @@ const checkMailThreadByCondition = (
   conditionBits,
   {
     userUid,
-    spammedUserUids,
-    blockedUserUids
+    spammedUserUids
   },
   {
-    threadCreatorUid,
+    threadParticipants,
     headMailUid
   },
   mailHashMap,
   returnValue
 ) => {
-  const [checkIsSpam, checkIsBlock, checkIsSent] = conditionBits;
+  const [checkIsSpam, checkIsSent] = conditionBits;
 
-  if (checkIsSpam && (threadCreatorUid in spammedUserUids)) {
-    return returnValue;
-  }
+  if (checkIsSpam) {
+    let isSpam = false;
 
-  if (checkIsBlock && (threadCreatorUid in blockedUserUids)) {
-    return returnValue
+    for (let i = 0; i < threadParticipants.length; i++) {
+      if (threadParticipants[i] in spammedUserUids) {
+        isSpam = true;
+        return;
+      }
+    }
+    
+    return isSpam ? returnValue : !returnValue;
   }
 
   if (checkIsSent && (mailHashMap[headMailUid].senderUid === userUid)) {
@@ -107,7 +110,7 @@ export const useMailThreads = (type) => {
       return mailThreadsHashMap[currentUser.userUid]
         // Filter threads that belong to inbox category
         .filter((thread) => {
-          return checkMailThreadByCondition([1, 1, 0], currentUser, thread, mailHashMap, INVALID) &&
+          return checkMailThreadByCondition([1, 0], currentUser, thread, mailHashMap, INVALID) &&
             !checkIsThreadDeleted(thread)
         })
     }
@@ -124,7 +127,7 @@ export const useMailThreads = (type) => {
       return mailThreadsHashMap[currentUser.userUid]
         .filter(thread => {
           return (
-            checkMailThreadByCondition([1, 1, 0], currentUser, thread, mailHashMap, INVALID) &&
+            checkMailThreadByCondition([1, 0], currentUser, thread, mailHashMap, INVALID) &&
             (thread.starredMailUids.length > 0) &&
             !checkIsThreadDeleted(thread)
           )
@@ -143,7 +146,7 @@ export const useMailThreads = (type) => {
       return mailThreadsHashMap[currentUser.userUid]
         .filter(thread => {
           return (
-            checkMailThreadByCondition([1, 1, 0], currentUser, thread, mailHashMap, INVALID) && 
+            checkMailThreadByCondition([1, 0], currentUser, thread, mailHashMap, INVALID) && 
             thread.isImportant &&
             !checkIsThreadDeleted(thread)
           )
@@ -160,8 +163,8 @@ export const useMailThreads = (type) => {
       return mailThreadsHashMap[currentUser.userUid]
         .filter(thread => {
           return (
-            checkMailThreadByCondition([0, 0, 1], currentUser, thread, mailHashMap, VALID) &&
-            checkMailThreadByCondition([1, 1, 0], currentUser, thread, mailHashMap, INVALID) &&
+            checkMailThreadByCondition([0, 1], currentUser, thread, mailHashMap, VALID) &&
+            checkMailThreadByCondition([1, 0], currentUser, thread, mailHashMap, INVALID) &&
             !checkIsThreadDeleted(thread)
           )
         })
@@ -177,8 +180,8 @@ export const useMailThreads = (type) => {
       return mailThreadsHashMap[currentUser.userUid]
         .filter(thread => {
           return (
-            checkMailThreadByCondition([1, 0, 0], currentUser, thread, mailHashMap, VALID) &&
-            checkMailThreadByCondition([0, 1, 1], currentUser, thread, mailHashMap, INVALID)
+            checkMailThreadByCondition([1, 0], currentUser, thread, mailHashMap, VALID) &&
+            checkMailThreadByCondition([0, 1], currentUser, thread, mailHashMap, INVALID)
           )
         })
     }
@@ -193,7 +196,7 @@ export const useMailThreads = (type) => {
       return mailThreadsHashMap[currentUser.userUid]
         .filter(thread => {
           return (
-            checkMailThreadByCondition([1, 0, 0], currentUser, thread, mailHashMap, INVALID) &&
+            checkMailThreadByCondition([1, 0], currentUser, thread, mailHashMap, INVALID) &&
             checkHasDeleted(thread)
           )
         })

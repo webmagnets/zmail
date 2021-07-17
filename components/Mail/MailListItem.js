@@ -1,6 +1,5 @@
 import Image from 'next/image'
-import { useState } from 'react';
-import { MdForward, MdMoreVert, MdReply, MdStar, MdStarBorder } from 'react-icons/md';
+import { MdMoreVert, MdReply, MdStar, MdStarBorder } from 'react-icons/md';
 import { getDateByTime } from '../../lib/utils';
 import IconButton from '../Button/IconButton';
 

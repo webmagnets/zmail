@@ -17,7 +17,6 @@ const MailList = ({
 }) => {
   const dispatch = useDispatch();
   const router = useRouter();
-  console.log(expandedMailUids);
 
   const [isComposeEmailOpen, setIsComposeEmailOpen] = useState(false);
   const [composeEmailDetail, setComposeEmailDetail] = useState({
@@ -25,8 +24,29 @@ const MailList = ({
     senderEmail: '',
     senderDisplayName: '',
     senderUserUid: '',
-    sourceThreadId: ''
+    sourceThreadId: '',
+    emailPreContent: ''
   })
+
+  const getReceiversString = (receivers) => {
+    return receivers.reduce((acc, cur) => {
+      const { email, displayName } = cur;
+      if (acc.length === 0) {
+        return acc += `${displayName} <${email}>`
+      } else {
+        return acc += `, ${displayName} <${email}>`
+      }
+    }, '')
+  }
+
+  const getAllPreviousContent = () => {
+    return mailList
+      .reverse()
+      .reduce((acc, cur) => {
+        const header = `\n--------- Forwarded Message ---------\nFrom: ${cur.senderDetails.displayName} <${cur.senderDetails.email}>\nTo: ${getReceiversString(cur.receiverDetails)}\n\n`
+        return acc += (header + cur.content + "\n")
+      }, '')
+  }
 
   const mailListWithStarred = mailList.map(mail => {
     const starred = starredMailUids.find(el => el === mail.mailUid) !== undefined;
@@ -60,9 +80,14 @@ const MailList = ({
         onClickStar(mailUid);
         return;
       case 'reply':
+        setComposeEmailDetail({ 
+          composeType: key,
+          ...value
+         })
       case 'forward':
         setComposeEmailDetail({ 
           composeType: key,
+          emailPreContent: getAllPreviousContent(),
           ...value
          })
          setIsComposeEmailOpen(true);
@@ -72,8 +97,15 @@ const MailList = ({
     }
   }
 
+  const onClickChangeComposeType = (type) => {
+    setComposeEmailDetail({
+      ...composeEmailDetail,
+      composeType: type
+    })
+  }
+
   return (
-    <div className="pb-10">
+    <div className="pb-10 overflow-x-hidden overflow-y-auto mailListHeight">
       <div className="divide-y">
       {
         mailListWithStarred.map((mail, i) => {
@@ -99,6 +131,7 @@ const MailList = ({
             composeEmailDetail={composeEmailDetail}
             onClickSend={handleOnSendEmail}
             onClickClose={() => setIsComposeEmailOpen(false)}
+            onClickChangeComposeType={onClickChangeComposeType}
           />
         )
         : (

@@ -2,14 +2,13 @@ import {
   MdRefresh,
   MdMoreVert,
   MdDelete,
-  MdDrafts,
   MdMarkunread,
-  MdErrorOutline,
   MdCheckBoxOutlineBlank,
   MdArrowDropDown,
   MdIndeterminateCheckBox,
   MdCheckBox,
-  MdDeleteSweep
+  MdDeleteSweep,
+  MdReport
 } from 'react-icons/md';
 import { useDispatch, useSelector } from 'react-redux';
 import useCategory from '../../hooks/category';
@@ -51,6 +50,12 @@ const MailThreadListAction = () => {
 
   const handleOnRecover = () => {
     dispatch(recoverSelectedMailThreads());
+  }
+
+  const handleOnSpam = () => {
+    const userUids = selectedMailThreads.reduce((acc, cur) => {
+      
+    }, {})
   }
 
   return (
@@ -98,7 +103,7 @@ const MailThreadListAction = () => {
           label="Spam"
           tooltipLocation="bottom"
           imgComponent={
-            <MdErrorOutline size="20px" color="white" />
+            <MdReport size="20px" color="white" />
           }
         />
         <IconButton

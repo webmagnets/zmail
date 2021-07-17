@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import MailLayout from '../../../components/Layouts/MailLayout';
 import MailThreadListContainer from '../../../components/Mail/MailThreadListContainer';
+import ComposeMailModal from '../../../components/Modal/ComposeMailModal';
 import useCategory from '../../../hooks/category';
 import { useMailThreads } from '../../../hooks/mailThread';
 import { setCurrentMailThreads } from '../../../reducers/store/mailThread';

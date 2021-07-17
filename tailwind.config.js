@@ -14,11 +14,13 @@ module.exports = {
         'full': '100%',
         '40': '40px',
         '56': '56px',
+        '100': '100px',
         '168': '168px',
         '248': '248px'
        },
        minHeight: {
-        'list': 'calc(100vh - 117px)'
+        'list': 'calc(100vh - 117px)',
+        'mail-list': 'calc(100vh - 145px)'
        },
        backgroundImage: theme => ({
          'inbox': "url('/inbox.png')",

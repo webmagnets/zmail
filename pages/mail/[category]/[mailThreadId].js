@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import IconButton from '../../../components/Button/IconButton';
 import MailLayout from '../../../components/Layouts/MailLayout';
 import MailList from '../../../components/Mail/MailList';
+import MailListAction from '../../../components/Mail/MailListAction';
 import useCategory from '../../../hooks/category';
 import { getMailForSend, getMailWithUserInfo, getNewThread, validateRecipients } from '../../../lib/utils';
 import { setMails } from '../../../reducers/store/mail';
@@ -74,7 +75,9 @@ const MailThread = () => {
 
   const updateMailThreadWithNewMail = (thread, newMail, userUid) => {
     const { threadId, headMailUid, linkedMailUids, threadParticipants, threadOwnerUid } = thread;
-      
+    
+    const updateUnread = !(thread.threadId === newMail.sourceThreadId);
+
     const updatedHeadMailUid = newMail.mailUid;
     const updatedThreadParticipants = [ ...threadParticipants ];
     const updatedLinkedMailUids = { ...linkedMailUids };
@@ -94,12 +97,18 @@ const MailThread = () => {
         linkedMailUids: updatedLinkedMailUids,
         headMailUid: updatedHeadMailUid,
         threadParticipants: updatedThreadParticipants,
-        hasUnread: true
+        hasUnread: updateUnread
       }
     ))
   }
 
-  const handleOnSendEmail = (recipientEmails, content, senderUserUid, senderEmail, sourceThreadId) => {
+  const handleOnSendEmail = (
+    recipientEmails,
+    content,
+    senderUserUid,
+    senderEmail,
+    sourceThreadId
+  ) => {
     const [isValid, validUids] = validateRecipients(recipientEmails, userHashMap);
     console.log(recipientEmails, content);
 
@@ -227,7 +236,8 @@ const MailThread = () => {
       </Head>
 
       <MailLayout category={category}>
-        <div className="flex flex-col pr-4 overflow-y-scroll bg-white">
+        <MailListAction />
+        <div className="flex flex-col pr-4 bg-white">
           {/* Title Row */}
           <div className="flex items-center justify-between pt-5 pb-2 pl-16">
             <div className="flex items-center">
