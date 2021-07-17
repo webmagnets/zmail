@@ -12,8 +12,6 @@ const MailListItem = ({
   currentUserUid,
   handleOnClickItem
 }) => {
-  console.log(mail);
-  
   const receiverNames = mail.receiverDetails.reduce((acc, cur) => {
     const name = cur.userUid === currentUserUid ? 'me' : cur.displayName;
 

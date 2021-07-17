@@ -11,7 +11,6 @@ const getUserDisplayNamesByUid = (thread, userHashMap, mailHashMap, forTrash) =>
     const deletedMailSenderList = []
 
     thread.deletedMailUids.forEach(uid => {
-      console.log(userHashMap[uid]);
       const senderName = mailHashMap[uid].senderUid;
       if (!(senderName in deletedMailSenderList)) {
         deletedMailSenderList.push(senderName);

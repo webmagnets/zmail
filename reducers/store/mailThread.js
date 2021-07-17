@@ -134,8 +134,6 @@ const mailThread = (state = initialState, action) => {
       let updatedSelectedThreads;
       let changedKey;
 
-      console.log(action.payload);
-
       switch (action.payload) {
         case 'delete': {
           changedKey = 'deletedMailUids';
@@ -167,8 +165,6 @@ const mailThread = (state = initialState, action) => {
           break;
         }
       }
-
-      console.log(updatedSelectedThreads)
       
       const userUid = state.curMailThreads[0].threadOwnerUid;
       const updatedMailThreads = [...state.curMailThreads];

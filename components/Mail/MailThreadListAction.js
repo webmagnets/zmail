@@ -36,7 +36,6 @@ const MailThreadListAction = () => {
       dispatch(setUnreadSectionStatus(true));
     }
   }
-  console.log(selectedMailThreads);
   
   const checkbox = () => {
     if (curMailThreads.length === selectedMailThreads.length && selectedMailThreads.length > 0) {

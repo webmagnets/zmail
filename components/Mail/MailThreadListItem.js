@@ -46,7 +46,6 @@ const MailThreadListItem = ({
   const participantsString = () => {
     const { receiverDetails } = headMail;
     const receiverString = receiverDetails.reduce((acc, cur) => {
-      console.log(cur);
       const connector = acc === '' ? 'To: ' : ', ';
 
       if (cur.email === currentUser.email) {
@@ -91,8 +90,6 @@ const MailThreadListItem = ({
   }
 
   const onClickMailThread = (threadId) => {
-    router.prefetch(`${router.asPath}/${threadId}`);
-
     // Navigate to Mails Page
     router.push(`${router.asPath}/${threadId}`);
 

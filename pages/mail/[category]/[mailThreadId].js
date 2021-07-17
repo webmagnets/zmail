@@ -38,8 +38,6 @@ const MailThread = () => {
   const [expandedMailUids, setExpandedMailUids] = useState([]);
   const hasExpandedAll = expandedMailUids.length >= mailThread.mailList.length - 1
 
-  console.log(mailThread);
-
   const handleAddExpandedMailUids = (targetMailUid) => {
     const cp = [...expandedMailUids];
     cp.push(targetMailUid);
@@ -161,8 +159,7 @@ const MailThread = () => {
             mailThread.title,
             newMail.mailUid
           )
-          console.log(validUids[i]);
-          console.log(updatedMailThreadsHashMap[validUids[i]]);
+
           updatedMailThreadsHashMap[validUids[i]].push(newThread);
         }
       }
@@ -181,7 +178,6 @@ const MailThread = () => {
     } = thread;
 
     const mailList = [];
-    console.log(thread, forTrash);
 
     // Set initial node uid with head mail uid
     let curNodeUid = headMailUid;

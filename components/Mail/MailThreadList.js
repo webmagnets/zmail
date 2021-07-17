@@ -3,7 +3,6 @@ import MailThreadListItem from './MailThreadListItem'
 const MailThreadList = ({
   threads
 }) => {
-  console.log("Thread List", threads)
   return (
     <div>
       <table className="w-full p-0 border-collapse table-fixed">
