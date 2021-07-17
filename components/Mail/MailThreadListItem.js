@@ -91,6 +91,8 @@ const MailThreadListItem = ({
   }
 
   const onClickMailThread = (threadId) => {
+    router.prefetch(`${router.asPath}/${threadId}`);
+
     // Navigate to Mails Page
     router.push(`${router.asPath}/${threadId}`);
 
