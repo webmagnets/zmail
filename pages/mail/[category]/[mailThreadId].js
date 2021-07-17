@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { MdLabel, MdLabelOutline, MdUnfoldMore } from 'react-icons/md';
+import { MdLabel, MdLabelOutline, MdUnfoldLess, MdUnfoldMore } from 'react-icons/md';
 import { useDispatch, useSelector } from 'react-redux';
 import IconButton from '../../../components/Button/IconButton';
 import MailLayout from '../../../components/Layouts/MailLayout';
@@ -28,11 +28,12 @@ const MailThread = () => {
   });
 
   const [expandedMailUids, setExpandedMailUids] = useState([]);
+  const hasExpandedAll = expandedMailUids.length >= mailThread.mailList.length - 1
 
   console.log(mailThread);
 
   const handleAddExpandedMailUids = (targetMailUid) => {
-    const cp =  [...expandedMailUids];
+    const cp = [...expandedMailUids];
     cp.push(targetMailUid);
     setExpandedMailUids(cp);
   }
@@ -42,6 +43,17 @@ const MailThread = () => {
       [...expandedMailUids].filter(uid => uid !== targetMailUid)
     );
   }
+
+  const handleExpandAll = () => {
+    if (hasExpandedAll) {
+      setExpandedMailUids([]);
+    } else {
+      setExpandedMailUids([
+        ...mailThread.mailList.map(mail => mail.mailUid)
+      ])
+    }
+
+  };
 
   const onClickImporant = (status) => {
     dispatch(changeMailThread(
@@ -215,41 +227,39 @@ const MailThread = () => {
                 {mailThread.threadTitle || ''}
               </h3>
               <div className="pt-1">
-                {
-                  mailThread.isImportant ? (
-                    <IconButton
-                      size="xs"
-                      label="Set Unimportant"
-                      tooltipLocation="bottom"
-                      imgComponent={
-                        <MdLabel size="20px" color="#F4C86A" />
-                      }
-                      onClickHandler={() => onClickImporant(false)}
-                    />
-                  )
-                  : (
-                    <IconButton
-                      size="xs"
-                      label="Set Important"
-                      tooltipLocation="bottom"
-                      imgComponent={
-                        <MdLabelOutline size="20px" color="gray" />
-                      }
-                      onClickHandler={() => onClickImporant(true)}
-                    />    
-                  )
-                }
+                <IconButton
+                  size="xs"
+                  label={
+                    mailThread.isImportant
+                      ? 'Set Unimportant'
+                      : 'Set Important'
+                  }
+                  tooltipLocation="bottom"
+                  imgComponent={
+                    mailThread.isImportant
+                      ? <MdLabel size="20px" color="#F4C86A" />
+                      : <MdLabelOutline size="20px" color="gray" />
+                  }
+                  onClickHandler={() => onClickImporant(!mailThread.isImportant)}
+                />
               </div>
             </div>
             <div>
               {/* Title Row Icons */}
               <IconButton
                 size="medium"
-                label="Expand All"
+                label={
+                  hasExpandedAll
+                    ? 'Collapse All'
+                    : 'Expand All'
+                }
                 tooltipLocation="bottom"
                 imgComponent={
-                  <MdUnfoldMore size="20px" color="black" />
+                  hasExpandedAll
+                    ? <MdUnfoldLess size="20px" color="black" />
+                    : <MdUnfoldMore size="20px" color="black" />
                 }
+                onClickHandler={handleExpandAll}
               />
             </div>
           </div>
