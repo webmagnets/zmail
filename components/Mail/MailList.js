@@ -40,8 +40,7 @@ const MailList = ({
   }
 
   const getAllPreviousContent = () => {
-    return mailList
-      .reverse()
+    return [...mailList.slice().reverse()]
       .reduce((acc, cur) => {
         const header = `\n--------- Forwarded Message ---------\nFrom: ${cur.senderDetails.displayName} <${cur.senderDetails.email}>\nTo: ${getReceiversString(cur.receiverDetails)}\n\n`
         return acc += (header + cur.content + "\n")
