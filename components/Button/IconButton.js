@@ -30,8 +30,14 @@ const inkSizeLookup = {
   }
 }
 
+const inkHoverColorLookup = {
+  'default': 'hover:bg-gray-100 group-hover:bg-opacity-10',
+  'black': 'hover:bg-black group-hover:bg-opacity-10',
+}
+
 const IconButton = ({
   size,
+  ink = 'default',
   label,
   tooltipLocation,
   imgComponent,
@@ -66,8 +72,7 @@ const IconButton = ({
           transition-all
           ease-in-out
           duration-300
-          hover:bg-gray-100
-          group-hover:bg-opacity-10
+          ${inkHoverColorLookup[ink]}
           z-10
           ${inkSizeLookup[size].height}
           ${inkSizeLookup[size].width}

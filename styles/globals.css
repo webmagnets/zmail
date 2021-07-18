@@ -31,6 +31,14 @@ a {
   min-height: 350px;
 }
 
+.threadListItemHoverBoxShadow {
+  box-shadow: inset 0 -1px 0 0 rgb(100 121 143 / 12%);
+}
+.threadListItemHoverBoxShadow:hover {
+  box-shadow: inset 1px 0 0 rgb(60 64 67 / 30%), inset -1px 0 0 rgb(60 64 67 / 30%), 0 1px 2px 0 rgb(60 64 67 / 30%), 0 1px 3px 1px rgb(60 64 67 / 15%);
+  z-index: 2;
+}
+
 * {
   box-sizing: border-box;
 }

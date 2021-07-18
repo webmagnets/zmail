@@ -133,14 +133,15 @@ const MailThreadListItem = ({
 
   return (
     <tr
-      className={`flex h-11 py-2 text-sm antialiased bg-white cursor-pointer hover:shadow-2xl ${isOpaque ? 'bg-opacity-70 ' : 'bg-opacity-90 font-bold'}`}
+      className={`flex h-11 py-2.5 text-sm relative antialiased bg-white cursor-pointer threadListItemHoverBoxShadow ${isOpaque ? 'bg-opacity-70 ' : 'bg-opacity-90 font-bold'} ${isSelected && 'bg-blue-200'}`}
     >
       <td className="flex items-center pl-2">
         <IconButton
           size="xs"
+          ink="black"
           imgComponent={
             isSelected
-              ? <MdCheckBox size="20px" color="gray" />
+              ? <MdCheckBox size="20px" color="black" />
               : <MdCheckBoxOutlineBlank size="20px" color="gray"/>
           }
           onClickHandler={() => onSelectThread()}
@@ -149,6 +150,7 @@ const MailThreadListItem = ({
       <td className="flex items-center">
         <IconButton
           size="xs"
+          ink="black"
           label={
             starredMailUids.length > 0
               ? 'Unset Star'
@@ -158,37 +160,29 @@ const MailThreadListItem = ({
           imgComponent={
             starredMailUids.length > 0
               ? <MdStar size="20px" color="#F4C86A" />
-              : <MdStarBorder size="20px" color="gray" />
+              : <MdStarBorder size="20px" color={isSelected ? 'black' : 'gray'} />
           }
           onClickHandler={onClickStar}
         />
       </td>
       <td className="flex items-center">
         <div className="flex items-center justify-center pr-3">
-          {
-            isImportant ? (
-              <IconButton
-                size="xs"
-                label="Set Unimportant"
-                tooltipLocation="bottom"
-                imgComponent={
-                  <MdLabel size="20px" color="#F4C86A" />
-                }
-                onClickHandler={onClickImporant}
-              />
-            )
-            : (
-              <IconButton
-                size="xs"
-                label="Set Important"
-                tooltipLocation="bottom"
-                imgComponent={
-                  <MdLabelOutline size="20px" color="gray" />
-                }
-                onClickHandler={onClickImporant}
-              />    
-            )
-          }
+          <IconButton
+            size="xs"
+            ink="black"
+            label={
+              isImportant
+                ? 'Set Unimportant'
+                : 'Set Important'
+            }
+            tooltipLocation="bottom"
+            imgComponent={
+              isImportant
+                ? <MdLabel size="20px" color="#F4C86A" />
+                : <MdLabelOutline size="20px" color={isSelected ? 'black' : 'gray'} />
+            }
+            onClickHandler={onClickImporant}
+          />
         </div>
       </td>
       <td
@@ -216,7 +210,7 @@ const MailThreadListItem = ({
         <div className="max-w-sm w-max whitespace-nowrap overflow-ellipsis">
           {threadTitle}
         </div>
-        <div className="ml-1.5 truncate text-gray-500">
+        <div className="ml-1.5 truncate text-gray-500 font-normal">
           {`- ${headMail.content}`}
         </div>
       </td>
