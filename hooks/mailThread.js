@@ -43,12 +43,13 @@ const checkMailThreadByCondition = (
     let isSpam = false;
 
     for (let i = 0; i < threadParticipants.length; i++) {
-      if (threadParticipants[i] in spammedUserUids) {
+      const index = spammedUserUids.findIndex(el => el === threadParticipants[i])
+      if (index > -1) {
         isSpam = true;
-        return;
+        break;
       }
     }
-    
+
     return isSpam ? returnValue : !returnValue;
   }
 
@@ -177,12 +178,12 @@ export const useMailThreads = (type) => {
 
     const spam = () =>  {
       return mailThreadsHashMap[currentUser.userUid]
-        .filter(thread => {
-          return (
+        .filter(
+          thread => (
             checkMailThreadByCondition([1, 0], currentUser, thread, mailHashMap, VALID) &&
             checkMailThreadByCondition([0, 1], currentUser, thread, mailHashMap, INVALID)
           )
-        })
+        )
     }
 
     /*

@@ -9,17 +9,22 @@ import {
   MdIndeterminateCheckBox,
   MdCheckBox,
   MdDeleteSweep,
-  MdReport
+  MdReport,
+  MdDrafts,
+  MdMoveToInbox
 } from 'react-icons/md';
 import { useDispatch, useSelector } from 'react-redux';
 import useCategory from '../../hooks/category';
-import { deleteSelectedMailThreads, recoverSelectedMailThreads, setReadSectionStatus, setSelectedMailThreads, setUnreadSectionStatus } from '../../reducers/store/mailThread';
+import { deleteSelectedMailThreads, readSelectedMailThreads, recoverSelectedMailThreads, setReadSectionStatus, setSelectedMailThreads, setUnreadSectionStatus, unreadSelectedMailThreads } from '../../reducers/store/mailThread';
+import { addUsersToSpam, removeUsersFromSpam } from '../../reducers/store/user';
 import IconButton from '../Button/IconButton';
 import Dropdown from '../Dropdown/Dropdown';
 
 const MailThreadListAction = () => {
   const dispatch = useDispatch();
   const category = useCategory();
+  const currentUser = useSelector(({ user }) => user.currentUser)
+  const mailThreadsHashMap = useSelector(({ mailThread }) => mailThread.mailThreadsHashMap);
   const curMailThreads = useSelector(({ mailThread }) => mailThread.curMailThreads);
   const selectedMailThreads = useSelector(({ mailThread }) => mailThread.selectedMailThreads);
 
@@ -104,11 +109,36 @@ const MailThreadListAction = () => {
     dispatch(recoverSelectedMailThreads());
   }
 
-  const handleOnSpam = () => {
-    const userUids = selectedMailThreads.reduce((acc, cur) => {
-      
-    }, {})
+  const handleOnUnread = () => {
+    dispatch(unreadSelectedMailThreads());
   }
+
+  const handleOnRead = () => {
+    dispatch(readSelectedMailThreads());
+  }
+
+  const handleOnSpam = (type) => {
+    const userThreads = mailThreadsHashMap[currentUser.userUid]
+    const userUidsObj = selectedMailThreads.reduce((acc, cur) => {
+      const { threadParticipants } = userThreads.filter(t => t.threadId === cur.threadId)[0];
+      
+      threadParticipants.forEach(p => {
+        if (p !== currentUser.userUid) {
+          acc[p] = 1;
+        }
+      })
+
+      return acc
+    }, {})
+
+    if (type === 'add') {
+      dispatch(addUsersToSpam(Object.keys(userUidsObj)));
+    } else {
+      dispatch(removeUsersFromSpam(Object.keys(userUidsObj)));
+    }
+  }
+
+  const hasUnreadSelectedThreads = selectedMailThreads.filter(thread => thread.hasUnread).length > 0
 
   return (
     <div className="flex items-center justify-start h-12 border-b border-opacity-20">
@@ -159,10 +189,21 @@ const MailThreadListAction = () => {
       `}>
         <IconButton 
           size="medium"
-          label="Spam"
+          label={
+            category !== 'spam'
+              ? 'Spam'
+              : 'Remove Spam'
+          }
           tooltipLocation="bottom"
           imgComponent={
-            <MdReport size="20px" color="white" />
+            category !== 'spam'
+              ? <MdReport size="20px" color="white" />
+              : <MdMoveToInbox size="20px" color="white" />
+          }
+          onClickHandler={
+            category !== 'spam'
+              ? () => handleOnSpam('add')
+              : () => handleOnSpam('remove')
           }
         />
         <IconButton
@@ -184,14 +225,28 @@ const MailThreadListAction = () => {
               : handleOnRecover
           }
         />
-        <IconButton
-          size="medium"
-          label="Mark Unread"
-          tooltipLocation="bottom"
-          imgComponent={
-            <MdMarkunread size="20px" color="white" />
-          }
-        />
+        {
+          category !== 'spam' &&
+          <IconButton
+            size="medium"
+            label={
+              hasUnreadSelectedThreads
+                ? 'Mark Read'
+                : 'Mark Unread'
+            }
+            tooltipLocation="bottom"
+            imgComponent={
+              hasUnreadSelectedThreads
+                ? <MdDrafts size="20px" color="white" />
+                : <MdMarkunread size="20px" color="white" />
+            }
+            onClickHandler={
+              hasUnreadSelectedThreads
+                ? handleOnRead
+                : handleOnUnread
+            }
+          />
+        }
       </div>
     </div>
   )

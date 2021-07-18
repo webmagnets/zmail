@@ -2,6 +2,7 @@ export const SET_CURRENT_USER = 'SET_CURRENT_USER'
 export const USER_LOGOUT = "USER_LOGOUT"
 export const SET_INITIAL_USERS = 'SET_INITIAL_USERS'
 export const ADD_SPAM_USER = 'ADD_SPAM_USER'
+export const REMOVE_SPAM_USER = 'REMOVE_SPAM_USER'
 
 
 export const userLogOut = () => ({
@@ -20,6 +21,11 @@ export const setInitialUsers = (users) => ({
 
 export const addUsersToSpam = (userUids) => ({
   type: ADD_SPAM_USER,
+  payload: userUids
+})
+
+export const removeUsersFromSpam = (userUids) => ({
+  type: REMOVE_SPAM_USER,
   payload: userUids
 })
 
@@ -56,11 +62,41 @@ const user = (state = initialState, action) => {
       const updatedSpammedUserUids = [...state.currentUser.spammedUserUids];
       
       action.payload.forEach(uid => {
-        if (!(uid in updatedSpammedUserUids)) {
+        const index = updatedSpammedUserUids.findIndex(el => el === uid);
+        if (index === -1) {
           updatedSpammedUserUids.push(uid);
         }
       })
 
+      console.log(updatedSpammedUserUids);
+
+      return {
+        ...state,
+        userHashMap: {
+          ...state.userHashMap,
+          [state.currentUser.userUid]: {
+            ...state.userHashMap[state.currentUser.userUid],
+            spammedUserUids: updatedSpammedUserUids
+          }
+        },
+        currentUser: {
+          ...state.currentUser,
+          spammedUserUids: updatedSpammedUserUids
+        }
+      }
+    }
+
+    case REMOVE_SPAM_USER: {
+      const updatedSpammedUserUids = [...state.currentUser.spammedUserUids]
+        .filter(uid => {
+          const index = action.payload.findIndex(el => el === uid);
+          if (index > -1) {
+            return false
+          } else {
+            return true
+          }
+        })
+      
       return {
         ...state,
         userHashMap: {

@@ -57,6 +57,16 @@ export const recoverSelectedMailThreads = () => ({
   payload: 'recover'
 })
 
+export const unreadSelectedMailThreads = () => ({
+  type: ACTION_ON_SELECTED_MAIL_THREADS,
+  payload: 'unread'
+})
+
+export const readSelectedMailThreads = () => ({
+  type: ACTION_ON_SELECTED_MAIL_THREADS,
+  payload: 'read'
+})
+
 const initialState = {
   mailThreadsHashMap: {},
   curMailThreads: [],
@@ -155,6 +165,30 @@ const mailThread = (state = initialState, action) => {
               return {
                 ...thread,
                 deletedMailUids: []
+              }
+            })
+          break;
+        }
+
+        case 'unread': {
+          changedKey = 'hasUnread';
+          updatedSelectedThreads = [...state.selectedMailThreads]
+            .map((thread) => {
+              return {
+                ...thread,
+                hasUnread: true
+              }
+            })
+          break;
+        }
+
+        case 'read': {
+          changedKey = 'hasUnread';
+          updatedSelectedThreads = [...state.selectedMailThreads]
+            .map((thread) => {
+              return {
+                ...thread,
+                hasUnread: false
               }
             })
           break;
